@@ -8,9 +8,9 @@ from . import map
 class Level():
     def __init__(self):
         self.loadMap()
-        #如果在地图配置文件中设置了格子信息，则读取出来
+        # 如果在地图配置文件中设置了格子信息，则读取出来
         grid = self.map_data[c.MAP_GRID] if c.MAP_GRID in self.map_data else None
-        #创建地图类
+        # 创建地图类
         self.map = map.Map(c.GRID_X_LEN, c.GRID_Y_LEN, grid)
     
     def loadMap(self):
@@ -18,6 +18,7 @@ class Level():
         map_file = 'level_1.json'
         file_path = os.path.join('data', 'map', map_file)
         f = open(file_path)
+        # json.load 函数将json文件内容解析后返回一个字典
         self.map_data = json.load(f)
         f.close()
 
@@ -25,6 +26,7 @@ class Level():
         '''游戏的更新函数'''
         self.current_time = current_time
         if mouse_pos is not None:
+            # mouse_pos 不是None，表示有鼠标点击事件
             self.mouseClick(mouse_pos)
         self.draw(surface)
 
