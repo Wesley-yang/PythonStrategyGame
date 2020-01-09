@@ -1,5 +1,3 @@
-__author__ = 'marble_xu'
-
 import os  #加载os模块
 import json #加载json模块
 import pygame as pg  #为了书写方便，将pygame缩写为pg
