@@ -77,7 +77,7 @@ class Map():
         
         #绘制地图每一列的线
         for x in range(self.width):
-            # draw a horizontal line
+            # draw a vertical line
             start_pos = (c.REC_SIZE * x, 0) 
             end_pos = (c.REC_SIZE * x, c.MAP_HEIGHT)
             pg.draw.line(surface, c.BLACK, start_pos, end_pos, 1)

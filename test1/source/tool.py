@@ -1,9 +1,9 @@
 __author__ = 'marble_xu'
 
-import os
-import json
-import pygame as pg  #为了方便，将pygame缩写为pg
-from . import constants as c
+import os  #加载os模块
+import json #加载json模块
+import pygame as pg  #为了书写方便，将pygame缩写为pg
+from . import constants as c #为了书写方便，将constants缩写为c
 from . import level
 
 class Control():
