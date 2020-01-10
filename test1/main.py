@@ -1,6 +1,13 @@
 import pygame as pg
-from source.main import main
+from source import tool
+
+def main():
+    # 创建游戏的控制类
+    game = tool.Control()
+    # 游戏的主循环
+    game.main()
 
 if __name__=='__main__':
+    # 游戏的执行入口
     main()
     pg.quit()
