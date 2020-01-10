@@ -29,7 +29,9 @@ class Map():
             for x in range(self.width):
                 type = self.grid_map[y][x]
                 if type != c.MAP_EMPTY:
+                    # (x * c.REC_SIZE, y * c.REC_SIZE)表示格子在地图上的坐标
                     self.map_image.blit(tool.GRID[type], (x * c.REC_SIZE, y * c.REC_SIZE))
+        # pygame.Surface 创建的Surface对象的默认颜色是黑色，设置透明色为黑色后，图像上黑色的部分显示时变成透明
         self.map_image.set_colorkey(c.BLACK)
 
     def isValid(self, map_x, map_y):
