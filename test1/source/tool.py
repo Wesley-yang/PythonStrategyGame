@@ -1,5 +1,4 @@
 import os  # 加载os模块
-import json # 加载json模块
 import pygame as pg  # 为了书写方便，将pygame缩写为pg
 from . import constants as c # 为了书写方便，将constants缩写为c
 from . import level
@@ -82,6 +81,7 @@ def load_all_gfx(directory, colorkey=c.WHITE, accept=('.png', '.jpg', '.bmp', '.
 def load_map_grid_image():
     '''获取地图格子类型的图片'''
     grid_images = {}
+    # image_rect_dict 是每个格子类型图片在tile图片中的位置和大小
     image_rect_dict = {c.MAP_STONE:(0, 16, 16, 16), c.MAP_GRASS:(0, 0, 16, 16)}
     for type, rect in image_rect_dict.items():
         grid_images[type] = get_image(GFX['tile'], *rect, c.WHITE, 3)
