@@ -48,21 +48,24 @@ class Control():
             self.clock.tick(self.fps)
 
 def get_image(sheet, x, y, width, height, colorkey, scale):
-    '''因为有的大图片里包含了很多小图片，所以要根据传入的坐标参数（x, y, width, height)
-       指定小图片在大图片中的位置，将小图片截取出来，还可以根据参数scale将图片进行放大或缩小'''
+    # 创建一个Surface对象image
     image = pg.Surface([width, height])
+    # 获取Surface对象的Rect属性
     rect = image.get_rect()
-
+    # 将sheet绘制在image上
     image.blit(sheet, (0, 0), (x, y, width, height))
+    # 设置图片的透明颜色
     image.set_colorkey(colorkey)
+    # 根据参数scale值对图片进行放大或缩小
     image = pg.transform.scale(image, (int(rect.width*scale), int(rect.height*scale)))
     return image
 
 def load_all_gfx(directory, colorkey=c.WHITE, accept=('.png', '.jpg', '.bmp', '.gif')):
-    '''遍历传入参数表示的目录，将所有文件后缀名在accept元组中的图片都加载到graphics字典中'''
+    # 创建一个graphics字典，保存所有加载的Surface对象
     graphics = {}
     # 遍历目录中的所有文件
     for pic in os.listdir(directory):
+        # 分离文件的名称和后缀名，比如'tile.png'分离后变成'tile' 和'.png'
         name, ext = os.path.splitext(pic)
         if ext.lower() in accept:
             # 文件的后缀名在accept元组中
@@ -72,7 +75,7 @@ def load_all_gfx(directory, colorkey=c.WHITE, accept=('.png', '.jpg', '.bmp', '.
             else:
                 img = img.convert()
                 img.set_colorkey(colorkey)
-            # 将加载的image保存在graphics字典中，key是文件名
+            # 将加载的image保存在graphics字典中，key是文件名称
             graphics[name] = img
     return graphics
 
