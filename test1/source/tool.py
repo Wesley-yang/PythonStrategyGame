@@ -1,4 +1,4 @@
-import os  # 加载os模块
+import os # 加载os模块
 import pygame as pg  # 为了书写方便，将pygame缩写为pg
 from . import constants as c # 为了书写方便，将constants缩写为c
 from . import level
@@ -24,7 +24,7 @@ class Control():
         self.level.update(self.screen, self.current_time, self.mouse_pos)
         self.mouse_pos = None
 
-    def event_loop(self):
+    def eventLoop(self):
         '''获取pygame监听到的所有事件，这里我们只关心退出按钮和鼠标点击事件'''
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -38,7 +38,7 @@ class Control():
         # 程序主循环
         while not self.done:
             # 获取事件
-            self.event_loop()
+            self.eventLoop()
             # 更新游戏状态
             self.update()
             # 显示图像
@@ -46,7 +46,7 @@ class Control():
             # 等待 1/self.fps 秒时间
             self.clock.tick(self.fps)
 
-def get_image(sheet, x, y, width, height, colorkey, scale):
+def getImage(sheet, x, y, width, height, colorkey, scale):
     # 创建一个Surface对象image
     image = pg.Surface([width, height])
     # 获取Surface对象的Rect属性
@@ -59,7 +59,7 @@ def get_image(sheet, x, y, width, height, colorkey, scale):
     image = pg.transform.scale(image, (int(rect.width*scale), int(rect.height*scale)))
     return image
 
-def load_all_gfx(directory, colorkey=c.WHITE, accept=('.png', '.jpg', '.bmp', '.gif')):
+def loadAllGraphics(directory, colorkey=c.WHITE, accept=('.png', '.jpg', '.bmp', '.gif')):
     # 创建一个graphics字典，保存所有加载的Surface对象
     graphics = {}
     # 遍历目录中的所有文件
@@ -78,23 +78,23 @@ def load_all_gfx(directory, colorkey=c.WHITE, accept=('.png', '.jpg', '.bmp', '.
             graphics[name] = img
     return graphics
 
-def load_map_grid_image():
+def getMapGridImage():
     '''获取地图格子类型的图片'''
     grid_images = {}
     # image_rect_dict 是每个格子类型图片在tile图片中的位置和大小
     image_rect_dict = {c.MAP_STONE:(0, 16, 16, 16), c.MAP_GRASS:(0, 0, 16, 16)}
     for type, rect in image_rect_dict.items():
-        grid_images[type] = get_image(GFX['tile'], *rect, c.WHITE, 3)
+        grid_images[type] = getImage(GFX['tile'], *rect, c.WHITE, 3)
     return grid_images
 
 # pygame的初始化
 pg.init()
 # 设置游戏窗口的标题
 pg.display.set_caption(c.ORIGINAL_CAPTION)
-# 设置游戏窗口的大小（长度和宽度）
+# 设置游戏窗口的大小（宽度和高度）
 pg.display.set_mode(c.SCREEN_SIZE)
 
 # 加载resources/graphics目录中所有的图片文件
-GFX = load_all_gfx(os.path.join("resources","graphics"))
+GFX = loadAllGraphics(os.path.join("resources","graphics"))
 # 获取地图格子类型的图片
-GRID = load_map_grid_image()
+GRID = getMapGridImage()
