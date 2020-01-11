@@ -11,7 +11,9 @@ class Level(tool.State):
         tool.State.__init__(self)
     
     def startup(self, current_time, game_info):
+        # 保存状态的开始时间
         self.start_time = current_time
+        # 保存游戏信息
         self.game_info = game_info
         self.loadMap()
         # 如果在地图配置文件中设置了格子信息，则读取出来
@@ -35,6 +37,7 @@ class Level(tool.State):
             # mouse_pos 不是None，表示有鼠标点击事件
             self.mouseClick(mouse_pos)
         
+        # 检查游戏状态
         self.checkGameState()
         self.draw(surface)
 
@@ -44,11 +47,15 @@ class Level(tool.State):
     
     def checkGameState(self):
         if (self.current_time - self.start_time) > 5000:
-            win = random.choice([0, 1])
+            # 如果状态运行时间超过 5 秒，退出状态
             self.done = True
+            # 使用choice 函数随机游戏结果为胜利或失败
+            win = random.choice([0, 1])
             if win:
+                # 如果胜利，下一个状态是关卡胜利状态
                 self.next = c.LEVEL_WIN
             else:
+                # 如果胜利，下一个状态是关卡失败状态
                 self.next = c.LEVEL_LOSE
 
     def draw(self, surface):

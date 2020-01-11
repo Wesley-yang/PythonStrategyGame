@@ -11,8 +11,8 @@ def main():
                   c.LEVEL_LOSE: screen.LevelLoseScreen(),
                   c.LEVEL_WIN: screen.LevelWinScreen(),
                   c.LEVEL: level.Level()}
-    # 加状态类字典加入到控制类中，并设置游戏的启动状态
-    game.setup_states(state_dict, c.MAIN_MENU)
+    # 加状态类字典加入到控制类中，并设置游戏的初始状态为主菜单类
+    game.setupStates(state_dict, c.MAIN_MENU)
     # 游戏的主循环
     game.main()
 
