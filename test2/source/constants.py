@@ -25,14 +25,16 @@ BG_EMPTY = 0
 BG_ACTIVE = 1
 
 # 地图格子类型
-MAP_EMPTY = 0
-MAP_STONE = 1
-MAP_GRASS = 2
+MAP_EMPTY = 0 # 格子是空的
+MAP_STONE = 1 # 格子中是石头
+MAP_GRASS = 2 # 格子中是草地
 
 # 地图配置文件中的属性
 MAP_GRID = 'mapgrid'
 
+# 开始关卡值
 START_LEVEL_NUM = 1
+# 最大关卡值
 MAX_LEVEL_NUM = 2
 
 # 游戏的状态类型
@@ -43,8 +45,11 @@ LEVEL_WIN = 'level win'
 LEVEL = 'level'
 EXIT = 'exit'
 
+# 关卡失败信息
 LEVEL_LOSE_INFO = 'You Lose'
+# 关卡胜利信息
 LEVEL_WIN_INFO = 'You Win'
 
 # 状态间传递的信息
+# 当前关卡值
 LEVEL_NUM = 'level num'
