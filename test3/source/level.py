@@ -46,8 +46,8 @@ class Level(tool.State):
         self.map.setMouseClick(mouse_pos)
     
     def checkGameState(self):
-        if (self.current_time - self.start_time) > 5000:
-            # 如果状态运行时间超过 5 秒，退出状态
+        if (self.current_time - self.start_time) > 50000:
+            # 如果状态运行时间超过 50 秒，退出状态
             self.done = True
             # 使用choice 函数随机游戏结果为胜利或失败
             win = random.choice([0, 1])
