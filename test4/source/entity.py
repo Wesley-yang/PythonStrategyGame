@@ -23,6 +23,7 @@ class Entity():
         self.current_time = 0.0
         self.move_speed = c.MOVE_SPEED
         self.distance = 4
+        self.walk_path = None
     
     def getMapIndex(self):
         return (self.map_x, self.map_y)
@@ -44,16 +45,21 @@ class Entity():
         self.next_x, self.next_y = self.rect.x, self.rect.y
         self.state = c.WALK
 
+    def getNextPosition(self):
+        if len(self.walk_path) > 0:
+            next = self.walk_path[0]
+            map_x, map_y = next.getPos()
+            self.walk_path.remove(next)        
+            return self.getRectPos(map_x, map_y)
+        return None
+ 
     def walkToDestination(self, map):
         if self.rect.x == self.next_x and self.rect.y == self.next_y:
-            source = self.getRecIndex(self.rect.x, self.rect.y)
-            dest = self.getRecIndex(self.dest_x, self.dest_y)
-            location = aStarSearch.AStarSearch(map, source, dest)
-            if location is not None:
-                map_x, map_y, _ = aStarSearch.getFirstStepAndDistance(location)
-                self.next_x, self.next_y = self.getRectPos(map_x, map_y)
-            else:
+            pos = self.getNextPosition()
+            if pos is None:
                 self.state = c.IDLE
+            else:
+                self.next_x, self.next_y =  pos
 
         if self.rect.x != self.next_x:
             self.rect.x += self.move_speed if self.rect.x < self.next_x else -self.move_speed
@@ -70,12 +76,23 @@ class Entity():
                     self.frame_index = 0
                 self.animate_timer = self.current_time
 
+            if self.walk_path is None:
+                source = self.getRecIndex(self.rect.x, self.rect.y)
+                dest = self.getRecIndex(self.dest_x, self.dest_y)
+                path = aStarSearch.getPath(map, source, dest)
+                if path is not None:
+                    self.walk_path = path
+                    self.next_x, self.next_y = self.getNextPosition()                
+                else:
+                    self.state = c.IDLE
+    
             if self.rect.x != self.dest_x or self.rect.y != self.dest_y:
                 self.walkToDestination(map)
             else:
                 map.setEntity(self.map_x, self.map_y, None)
                 self.map_x, self.map_y = self.getRecIndex(self.dest_x, self.dest_y)
                 map.setEntity(self.map_x, self.map_y, self)
+                self.walk_path = None
                 self.state = c.IDLE
         
         if self.state == c.IDLE:
