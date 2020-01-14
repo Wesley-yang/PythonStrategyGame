@@ -72,7 +72,7 @@ class Map():
         
         print('source[%d, %d], dest[%d, %d]' % (entity_x, entity_y, map_x, map_y))
         if self.isInRange(entity_x, entity_y, map_x, map_y, distance):
-            self.active_entity.setDestination(map_x, map_y)
+            self.active_entity.setDestination(self, map_x, map_y)
             return True
         return False
     
