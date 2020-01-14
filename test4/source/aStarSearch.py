@@ -135,3 +135,17 @@ def getAStarDistance(map, source, dest):
     else:
         distance = None
     return distance
+
+def getPath(map, source, dest):
+    # 如果找到路径，返回 source 位置到 dest 位置的路径每一步的列表
+    path = []
+    location = AStarSearch(map, source, dest)
+    if location is not None:
+        # location 节点是 dest 位置
+        while location.pre_entry is not None:
+            # 按照从 dest 位置反方向添加到路径列表，最后一个是 source 的下一个位置
+            path.append(location)
+            location = location.pre_entry
+        # 将路径列表反转，变成从source 的下一个位置到 dest 位置的路径列表
+        path = path[::-1]
+    return path
