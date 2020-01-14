@@ -1,0 +1,137 @@
+from . import tool
+from . import map
+
+class SearchEntry():
+    def __init__(self, x, y, g_cost, f_cost=0, pre_entry=None):
+        # 保存节点的位置信息（x，y）
+        self.x = x
+        self.y = y
+        # 保存节点的 G 值和 F 值
+        self.g_cost = g_cost
+        self.f_cost = f_cost
+        # 保存节点的父节点 pre_entry，pre_entry 可能是 None
+        self.pre_entry = pre_entry
+    
+    def getPos(self):
+        # 返回 entry 的位置
+        return (self.x, self.y)
+
+
+def AStarSearch(map, source, dest):
+    def getNewPosition(map, locatioin, offset):
+        # 位置 (x, y) 表示 location 节点的一个相邻节点
+        x,y = (location.x + offset[0], location.y + offset[1])
+        if not map.isValid(x, y) or not map.isMovable(x, y):
+            # 如果位置 (x, y) 所在的地图格子是无效的或不可移动，返回 None
+            return None
+        return (x, y)
+        
+    def getPositions(map, location):
+        # 获取 location 节点所有可移动的相邻节点
+        offsets = tool.getMovePositions(location.x, location.y)
+        poslist = []
+        for offset in offsets:
+            pos = getNewPosition(map, location, offset)
+            if pos is not None:
+                poslist.append(pos)
+        return poslist
+
+    def calHeuristic(map, pos, dest):
+        return map.calHeuristicDistance(dest.x, dest.y, pos[0], pos[1])
+
+    def getMoveCost(location, pos):
+        # 从 location 节点移动到 pos 节点的距离
+        if location.x != pos[0] and location.y != pos[1]:
+            return 1.4
+        else:
+            return 1
+
+    def isInList(list, pos):
+        # 判断一个节点是否在字典中
+        if pos in list:
+            return list[pos]
+        return None
+
+    def addAdjacentPositions(map, location, dest, openlist, closedlist):
+        # 获取 location 节点所有可移动的相邻位置
+        poslist = getPositions(map, location)
+        for pos in poslist:
+            # 如果 pos 位置已经在 closedlist 字典中，不用添加
+            if isInList(closedlist, pos) is None:
+                # 查看 pos 位置是否在 openlist 字典中 
+                findEntry = isInList(openlist, pos)
+                h_cost = calHeuristic(map, pos, dest)
+                # 计算从 location 节点所在位置移动到 pos 位置的 g_cost
+                g_cost = location.g_cost + getMoveCost(location, pos)
+                if findEntry is None :
+                    # 如果 pos 位置不在 openlist 字典中，创建一个节点对象添加到 openlist
+                    openlist[pos] = SearchEntry(pos[0], pos[1], g_cost, g_cost+h_cost, location)
+                elif findEntry.g_cost > g_cost:
+                    # 如果 pos 位置在 openlist 字典中，并且 findEntry 节点的 g_cost 
+                    # 大于从 location 节点移动过来的 g_cost
+                    findEntry.g_cost = g_cost
+                    findEntry.f_cost = g_cost + h_cost
+                    # 更新 findEntry 节点的父节点为 location 节点
+                    findEntry.pre_entry = location
+    
+    def getFastPosition(openlist):
+        # 初始化 fast 值为 None
+        fast = None
+        for entry in openlist.values():
+            # 在 openlist 中找到一个 f_cost 值最小的节点
+            if fast is None:
+                fast = entry
+            elif fast.f_cost > entry.f_cost:
+                fast = entry
+        # 如果 openlist 列表为空，返回 None
+        return fast
+
+    # openlist 和 closedlist 字典的 key 是节点在地图上的位置（x, y）
+    openlist = {}
+    closedlist = {}
+    # 创建开始位置的节点对象
+    location = SearchEntry(source[0], source[1], 0.0)
+    # 创建终点位置的节点对象
+    dest = SearchEntry(dest[0], dest[1], 0.0)
+    # 将开始节点对象添加到 openlist 字典中
+    openlist[source] = location
+
+    while True:
+        # 从 openlist 字典中找到一个 f_cost 值最小的节点
+        location = getFastPosition(openlist)
+        if location is None:
+            # location 为 None，表示没有找到从开始位置到终点位置的路线
+            print("can't find valid path")
+            break;
+        
+        if location.x == dest.x and location.y == dest.y:
+            # location 位置和终点位置一样，表示找到路线
+            break
+        
+        # 将 location 节点添加到 closedlist 字典中
+        closedlist[location.getPos()] = location
+        # 将 location 节点从 openlist 字典中删除
+        openlist.pop(location.getPos())
+        # 
+        addAdjacentPositions(map, location, dest, openlist, closedlist)
+
+    return location
+
+def getFirstStepAndDistance(location):
+    # 获取路径的下一步位置和路径的距离
+    distance = 0
+    tmp = location
+    while location.pre_entry is not None:
+        distance += 1
+        tmp = location
+        location = location.pre_entry
+    return (tmp.x, tmp.y, distance)
+
+def getAStarDistance(map, source, dest):
+    # 获取 source 位置到 dest 位置的路径距离
+    location = AStarSearch(map, source, dest)
+    if location is not None:
+        _, _, distance = getFirstStepAndDistance(location)
+    else:
+        distance = None
+    return distance
