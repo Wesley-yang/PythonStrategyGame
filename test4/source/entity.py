@@ -40,7 +40,7 @@ class Entity():
             self.frames.append(tool.getImage(tool.GFX[name], 
                     *frame_rect, c.BLACK, c.SIZE_MULTIPLIER))
         
-    def setDestination(self, map_x, map_y):
+    def setDestination(self, map, map_x, map_y):
         self.dest_x, self.dest_y = self.getRectPos(map_x, map_y)
         
         source = self.getRecIndex(self.rect.x, self.rect.y)
@@ -61,7 +61,7 @@ class Entity():
             return self.getRectPos(map_x, map_y)
         return None
  
-    def walkToDestination(self, map):
+    def walkToDestination(self):
         if self.rect.x == self.next_x and self.rect.y == self.next_y:
             pos = self.getNextPosition()
             if pos is None:
@@ -85,7 +85,7 @@ class Entity():
                 self.animate_timer = self.current_time
     
             if self.rect.x != self.dest_x or self.rect.y != self.dest_y:
-                self.walkToDestination(map)
+                self.walkToDestination()
             else:
                 map.setEntity(self.map_x, self.map_y, None)
                 self.map_x, self.map_y = self.getRecIndex(self.dest_x, self.dest_y)
