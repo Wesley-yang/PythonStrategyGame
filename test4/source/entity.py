@@ -42,8 +42,16 @@ class Entity():
         
     def setDestination(self, map_x, map_y):
         self.dest_x, self.dest_y = self.getRectPos(map_x, map_y)
-        self.next_x, self.next_y = self.rect.x, self.rect.y
-        self.state = c.WALK
+        
+        source = self.getRecIndex(self.rect.x, self.rect.y)
+        dest = self.getRecIndex(self.dest_x, self.dest_y)
+        path = aStarSearch.getPath(map, source, dest)
+        if path is not None:
+            self.walk_path = path
+            self.next_x, self.next_y = self.getNextPosition()
+            self.state = c.WALK
+        else:
+            self.state = c.IDLE
 
     def getNextPosition(self):
         if len(self.walk_path) > 0:
@@ -69,22 +77,12 @@ class Entity():
     def update(self, current_time, map):
         self.current_time = current_time
         if self.state == c.WALK:
-            if (self.current_time - self.animate_timer) > 250:
+            if (self.current_time - self.animate_timer) > 200:
                 if self.frame_index == 0:
                     self.frame_index = 1
                 else:
                     self.frame_index = 0
                 self.animate_timer = self.current_time
-
-            if self.walk_path is None:
-                source = self.getRecIndex(self.rect.x, self.rect.y)
-                dest = self.getRecIndex(self.dest_x, self.dest_y)
-                path = aStarSearch.getPath(map, source, dest)
-                if path is not None:
-                    self.walk_path = path
-                    self.next_x, self.next_y = self.getNextPosition()                
-                else:
-                    self.state = c.IDLE
     
             if self.rect.x != self.dest_x or self.rect.y != self.dest_y:
                 self.walkToDestination(map)
