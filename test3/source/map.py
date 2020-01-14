@@ -36,7 +36,7 @@ class Map():
         self.map_image.set_colorkey(c.BLACK)
 
     def isValid(self, map_x, map_y):
-        '''判断传入的地图x和y的值是否是有效的'''
+        '''判断传入的地图 x 和 y 的值是否是有效的'''
         if (map_x < 0 or map_x >= self.width or
             map_y < 0 or map_y >= self.height):
             return False
@@ -47,28 +47,32 @@ class Map():
         return (x//c.REC_SIZE, y//c.REC_SIZE)
 
     def isMovable(self, map_x, map_y):
+        '''判断传入的地图位置所在的格子是否是可移动的'''
         return (self.grid_map[map_y][map_x] != c.MAP_STONE)
 
     def calHeuristicDistance(self, x1, y1, x2, y2):
         '''估计地图两个格点之间的距离'''
         return abs(x1 - x2) + abs(y1 - y2)
     
-    def isInRange(self, source_x, source_y, dest_x, dest_y, range):
+    def isInRange(self, source_x, source_y, dest_x, dest_y, max_distance):
+        '''调用 A* 算法函数获取两个格子之间的距离，判断是否小于等于传入的参数max_distance'''
         distance = aStarSearch.getAStarDistance(self, (source_x, source_y), (dest_x, dest_y))
         if distance is not None:
-            if distance <= range:
+            if distance <= max_distance:
                 return True
         return False
 
     def setMouseClick(self, mouse_pos):
-        '''设置鼠标点击的背景格子类型为 c.BG_ACTIVE'''
         x, y = mouse_pos
+        # 获取鼠标位置所在的地图格子
         map_x, map_y = self.getMapIndex(x, y)
+        # 恢复默认，设置所有地图格子类型为 c.BG_EMPTY
         for y in range(self.height):
             for x in range(self.width):
                 self.bg_map[y][x] = c.BG_EMPTY
 
         if self.isValid(map_x, map_y):
+            # 设置鼠标点击的背景格子类型为 c.BG_ACTIVE
             self.bg_map[map_y][map_x] = c.BG_ACTIVE
             for y in range(self.height):
                 for x in range(self.width):
@@ -76,6 +80,7 @@ class Map():
                         (x == map_x and y == map_y)):
                         continue
                     if self.isInRange(map_x, map_y, x, y, 4):
+                        # 设置距离小于等于 4 的格子类型为 c.BG_RANGE
                         self.bg_map[y][x] = c.BG_RANGE
 
     def drawBackground(self, surface):
