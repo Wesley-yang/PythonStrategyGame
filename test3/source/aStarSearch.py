@@ -112,7 +112,7 @@ def AStarSearch(map, source, dest):
             break
         
         # 将 location 节点添加到 closed_dict 字典中
-        closedlist[location.getPos()] = location
+        closed_dict[location.getPos()] = location
         # 将 location 节点从 open_dict 字典中删除
         open_dict.pop(location.getPos())
         # 添加 location 节点的相邻节点
