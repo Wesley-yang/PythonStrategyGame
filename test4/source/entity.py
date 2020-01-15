@@ -28,7 +28,7 @@ class Entity():
         # 记录游戏当前时间
         self.current_time = 0.0
         # 生物行走时的速度
-        self.move_speed = 1
+        self.move_speed = 2
         # 生物行走的距离
         self.distance = 4
         # 生物到目的位置的行走路径
