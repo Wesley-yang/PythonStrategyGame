@@ -20,7 +20,7 @@ class Level(tool.State):
         grid = self.map_data[c.MAP_GRID] if c.MAP_GRID in self.map_data else None
         # 创建地图类
         self.map = map.Map(c.GRID_X_LEN, c.GRID_Y_LEN, grid)
-        
+        # 创建生物组
         self.setupGroup()
         self.state = c.IDLE
     
@@ -34,7 +34,9 @@ class Level(tool.State):
         f.close()
 
     def setupGroup(self):
+        # 创建生物组 1
         self.group1 = entity.EntityGroup(0)
+        # 根据关卡地图配置文件中的生物配置，创建生物组 1 的生物
         self.group1.createEntity(self.map_data[c.GROUP1], self.map)
 
     def update(self, surface, current_time, mouse_pos):
@@ -42,31 +44,37 @@ class Level(tool.State):
         self.current_time = current_time
 
         if self.state == c.IDLE:
+            # 获取下一个行动的生物
             result = self.getActiveEntity()
             if result is not None:
                 entity, group = result
+                # 保存当前行动生物
                 self.map.active_entity = entity
+                # 显示当前行动生物可以行走的范围
                 self.map.showActiveEntityRange()
+                # 更新生物组的下一个行动生物索引
                 group.consumeEntity()
+                # 设置运行类状态为生物行为选择状态
                 self.state = c.SELECT
             else:
+                # 当前一轮所有生物都行动过了，进入下一轮
                 self.group1.nextTurn()
         elif self.state == c.SELECT:
             if mouse_pos is not None:
                 self.mouseClick(mouse_pos)
         elif self.state == c.ENTITY_ACT:
+            # 更新生物的状态
             self.group1.update(current_time, self.map)
             if self.map.active_entity.state == c.IDLE:
+                # 当前行动生物状态变成空闲状态，表示生物行动结束
                 self.state = c.IDLE
-        if mouse_pos is not None:
-            # mouse_pos 不是None，表示有鼠标点击事件
-            self.mouseClick(mouse_pos)
         
         # 检查游戏状态
         self.checkGameState()
         self.draw(surface)
 
     def getActiveEntity(self):
+        # 从生物组 1 获取下一个行动的生物
         entity1 = self.group1.getActiveEntity()
         if entity1:
             entity, group = entity1, self.group1
@@ -75,14 +83,16 @@ class Level(tool.State):
         return (entity, group)
 
     def mouseClick(self, mouse_pos):
-        '''有鼠标点击时，修改鼠标所在的地图格子颜色'''
+        # 判断鼠标点击的位置，当前行动生物是否可以走到
         if self.map.checkMouseClick(mouse_pos):
+            # 鼠标点击的位置，当前行动生物可以走到，重设地图背景格子类型
             self.map.resetBackGround()
+            # 设置运行类状态为生物行为执行状态
             self.state = c.ENTITY_ACT
     
     def checkGameState(self):
         if (self.current_time - self.start_time) > 50000:
-            # 如果状态运行时间超过 5 秒，退出状态
+            # 如果状态运行时间超过 50 秒，退出状态
             self.done = True
             # 使用choice 函数随机游戏结果为胜利或失败
             win = random.choice([0, 1])
