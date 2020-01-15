@@ -67,7 +67,7 @@ def AStarSearch(map, source, dest):
                 # 计算从 location 节点所在位置移动到 pos 位置的 g_cost
                 g_cost = location.g_cost + getMoveCost(location, pos)
                 if findEntry is None :
-                    # 如果 pos 位置不在 openlist 字典中，创建一个节点对象添加到 open_dict
+                    # 如果 pos 位置不在 open_dict 字典中，创建一个节点对象添加到 open_dict 字典中
                     open_dict[pos] = SearchEntry(pos[0], pos[1], g_cost, g_cost + h_cost, location)
                 elif findEntry.g_cost > g_cost:
                     # 如果 pos 位置在 open_dict 字典中，并且 findEntry 节点的 g_cost 
