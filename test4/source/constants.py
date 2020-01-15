@@ -66,15 +66,13 @@ LEVEL_WIN_INFO = 'You Win'
 LEVEL_NUM = 'level num'
 
 # 游戏运行类的状态类型
-# 运行类初始状态
-INIT = 'init'
-# 运行类生物行为选择状态
+# 空闲状态
+IDLE = 'idle'
+# 生物行为选择状态
 SELECT = 'select'
-# 运行类生物行为执行状态
+# 生物行为执行状态
 ENTITY_ACT = 'entity act'
 
 # 生物的状态类型
-# 生物空闲状态
-IDLE = 'idle'
-# 生物行走状态
+# 行走状态
 WALK = 'walk'
