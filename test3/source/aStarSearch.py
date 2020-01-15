@@ -67,10 +67,10 @@ def AStarSearch(map, source, dest):
                 # 计算从 location 节点所在位置移动到 pos 位置的 g_cost
                 g_cost = location.g_cost + getMoveCost(location, pos)
                 if findEntry is None :
-                    # 如果 pos 位置不在 openlist 字典中，创建一个节点对象添加到 openlist
+                    # 如果 pos 位置不在 openlist 字典中，创建一个节点对象添加到 open_dict
                     openlist[pos] = SearchEntry(pos[0], pos[1], g_cost, g_cost + h_cost, location)
                 elif findEntry.g_cost > g_cost:
-                    # 如果 pos 位置在 openlist 字典中，并且 findEntry 节点的 g_cost 
+                    # 如果 pos 位置在 open_dict 字典中，并且 findEntry 节点的 g_cost 
                     # 大于从 location 节点移动过来计算出的 g_cost
                     findEntry.g_cost = g_cost
                     findEntry.f_cost = g_cost + h_cost
@@ -96,11 +96,11 @@ def AStarSearch(map, source, dest):
     location = SearchEntry(source[0], source[1], 0.0)
     # 创建终点位置的节点对象
     dest = SearchEntry(dest[0], dest[1], 0.0)
-    # 将开始节点对象添加到 openlist 字典中
+    # 将开始节点对象添加到 open_dict 字典中
     open_dict[source] = location
 
     while True:
-        # 从 openlist 字典中找到一个 f_cost 值最小的节点
+        # 从 open_dict 字典中找到一个 f_cost 值最小的节点
         location = getFastPosition(open_dict)
         if location is None:
             # location 为 None，表示没有找到从开始位置到终点位置的路线
@@ -111,10 +111,10 @@ def AStarSearch(map, source, dest):
             # location 位置和终点位置一样，表示找到路线
             break
         
-        # 将 location 节点添加到 closedlist 字典中
+        # 将 location 节点添加到 closed_dict 字典中
         closedlist[location.getPos()] = location
-        # 将 location 节点从 openlist 字典中删除
-        closed_dict.pop(location.getPos())
+        # 将 location 节点从 open_dict 字典中删除
+        open_dict.pop(location.getPos())
         # 添加 location 节点的相邻节点
         addAdjacentPositions(map, location, dest, open_dict, closed_dict)
 
