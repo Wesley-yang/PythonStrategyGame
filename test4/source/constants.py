@@ -43,11 +43,17 @@ START_LEVEL_NUM = 1
 MAX_LEVEL_NUM = 2
 
 # 游戏的状态类型
+# 主菜单界面状态
 MAIN_MENU = 'main menu'
+# 关卡开始界面状态
 LEVEL_START = 'level start'
+# 关卡失败界面状态
 LEVEL_LOSE = 'level lose'
+# 关卡胜利界面状态
 LEVEL_WIN = 'level win'
+# 关卡运行界面状态
 LEVEL = 'level'
+# 游戏退出状态
 EXIT = 'exit'
 
 # 关卡失败信息
@@ -60,13 +66,15 @@ LEVEL_WIN_INFO = 'You Win'
 LEVEL_NUM = 'level num'
 
 # 游戏运行类的状态类型
+# 运行类初始状态
 INIT = 'init'
+# 运行类生物行为选择状态
 SELECT = 'select'
+# 运行类生物行为执行状态
 ENTITY_ACT = 'entity act'
 
 # 生物的状态类型
+# 生物空闲状态
 IDLE = 'idle'
+# 生物行走状态
 WALK = 'walk'
-
-# 游戏设置
-MOVE_SPEED = 2 # 生物移动速度
