@@ -57,32 +57,39 @@ class Map():
         '''估计地图两个格点之间的距离'''
         return abs(x1 - x2) + abs(y1 - y2)
     
-    def isInRange(self, source_x, source_y, dest_x, dest_y, range):
+    def isInRange(self, source_x, source_y, dest_x, dest_y, max_distance):
+        '''调用 A* 算法函数获取两个格子之间的距离，判断是否小于等于传入的参数 max_distance'''
         distance = aStarSearch.getAStarDistance(self, (source_x, source_y), (dest_x, dest_y))
         if distance is not None:
-            if distance <= range:
+            if distance <= max_distance:
                 return True
         return False
 
     def checkMouseClick(self, mouse_pos):
         x, y = mouse_pos
+        # 获取鼠标位置所在的地图位置
         map_x, map_y = self.getMapIndex(x, y)
+        # 获取行动生物所在的地图位置
         entity_x, entity_y = self.active_entity.getMapIndex()
+        # 获取行动生物的行走距离
         distance = self.active_entity.distance
         
-        print('source[%d, %d], dest[%d, %d]' % (entity_x, entity_y, map_x, map_y))
         if self.isInRange(entity_x, entity_y, map_x, map_y, distance):
+            # 如果鼠标位置和生物位置的距离小于等于生物行走距离，设置为生物的目的位置
             self.active_entity.setDestination(self, map_x, map_y)
             return True
         return False
     
     def resetBackGround(self):
+        # 恢复默认，设置所有地图格子类型为 c.BG_EMPTY
         for y in range(self.height):
             for x in range(self.width):
                 self.bg_map[y][x] = c.BG_EMPTY
 
     def showActiveEntityRange(self):
+        # 获取行动生物所在的地图位置
         map_x, map_y = self.active_entity.getMapIndex()
+        # 获取行动生物的行走距离
         distance = self.active_entity.distance
 
         self.resetBackGround()
@@ -93,11 +100,15 @@ class Map():
                 for x in range(self.width):
                     if (not self.isMovable(x,y) or not self.isValid(x,y) or
                         (x == map_x and y == map_y)):
+                        # 忽略不能移动，位置无效或者生物所在的地图格子
                         continue
                     if self.isInRange(map_x, map_y, x, y, distance):
+                        # 设置距离小于等于生物行走距离的格子类型为 c.BG_RANGE
                         self.bg_map[y][x] = c.BG_RANGE
 
     def setEntity(self, map_x, map_y, value):
+        # value 为 None，清除 entity_map 数组中指定位置的设置，
+        # value 不为 None， 添加生物到 entity_map 数组中指定位置
         self.entity_map[map_y][map_x] = value
 
     def drawBackground(self, surface):
