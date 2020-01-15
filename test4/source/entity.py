@@ -42,9 +42,6 @@ class Entity():
         '''返回在地图格子中显示生物图形的坐标'''
         return(map_x * c.REC_SIZE + 5, map_y * c.REC_SIZE + 8)
 
-    def getRecIndex(self, x, y):
-        return (x // c.REC_SIZE, y // c.REC_SIZE)
-
     def loadFrames(self, name):
         # 加载生物的图形列表
         frame_rect_list = [(64, 0, 32, 32), (96, 0, 32, 32)]
@@ -106,7 +103,7 @@ class Entity():
             else:
                 # 已经走到目的坐标，生物的地图位置已经改变，更新地图中生物所在的位置
                 map.setEntity(self.map_x, self.map_y, None)
-                self.map_x, self.map_y = self.getRecIndex(self.dest_x, self.dest_y)
+                self.map_x, self.map_y = map.getMapIndex(self.dest_x, self.dest_y)
                 map.setEntity(self.map_x, self.map_y, self)
                 # 设置行走路径为 None
                 self.walk_path = None
