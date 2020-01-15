@@ -81,7 +81,7 @@ def AStarSearch(map, source, dest):
         # 初始化 fast 值为 None
         fast = None
         for entry in open_dict.values():
-            # 在 openlist 中找到一个 f_cost 值最小的节点
+            # 在 open_dict 中找到一个 f_cost 值最小的节点
             if fast is None:
                 fast = entry
             elif fast.f_cost > entry.f_cost:
