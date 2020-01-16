@@ -95,6 +95,8 @@ class Entity():
             self.enemy = enemy
             # 设置生物状态为行走状态
             self.state = c.WALK
+        elif enemy is not None:
+            self.state = c.ATTACK
 
     def getNextPosition(self):
         # 获取下一个格子的坐标
