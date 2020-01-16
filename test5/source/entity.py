@@ -125,7 +125,7 @@ class Entity():
 
     def setHurt(self, damage, map):
         self.health -= damage
-        if self.health <= 0
+        if self.health <= 0:
             map.setEntity(self.map_x, self.map_y, None)
             self.group.removeEntity(self)
             
