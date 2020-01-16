@@ -119,13 +119,14 @@ class Entity():
         elif self.rect.y != self.next_y:
             self.rect.y += self.move_speed if self.rect.y < self.next_y else -self.move_speed
 
-    def attack(self, enemy):
+    def attack(self, enemy, map):
         hurt = self.attr.getHurt(enemy.attr)
-        enemy.setHurt(hurt)
+        enemy.setHurt(hurt, map)
 
-    def setHurt(self, damage):
+    def setHurt(self, damage, map):
         self.health -= damage
         if self.health <= 0
+            map.setEntity(self.map_x, self.map_y, None)
             self.group.removeEntity(self)
             
     def update(self, current_time, map):
@@ -156,7 +157,7 @@ class Entity():
                     # 设置生物状态为空闲状态
                     self.state = c.IDLE
         elif self.state == c.ATTACK:
-            self.attack(self.enemy)
+            self.attack(self.enemy, map)
             self.enemy = None
             self.state = c.IDLE
     
