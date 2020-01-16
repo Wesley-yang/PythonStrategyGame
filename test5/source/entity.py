@@ -113,13 +113,35 @@ class Entity():
                 self.state = c.IDLE
             else:
                 # 保存路径中下一个格子的坐标
-                self.next_x, self.next_y =  pos
+                self.next_x, self.next_y = pos
 
         # 行走到下一个格子的坐标，先移动 x 轴方向，在移动 y 轴方向
         if self.rect.x != self.next_x:
-            self.rect.x += self.move_speed if self.rect.x < self.next_x else -self.move_speed
+            if self.rect.x < self.next_x:
+                # 向 x 轴右边移动
+                self.rect.x += self.move_speed
+                if self.rect.x > self.next_x:
+                    # 如果大于下一个格子的 x 轴值，修正下
+                    self.rect.x = self.next_x
+            else:
+                # 向 x 轴左边移动
+                self.rect.x -= self.move_speed
+                if self.rect.x < self.next_x:
+                    # 如果小于下一个格子的 x 轴值，修正下
+                    self.rect.x = self.next_x
         elif self.rect.y != self.next_y:
-            self.rect.y += self.move_speed if self.rect.y < self.next_y else -self.move_speed
+            if self.rect.y < self.next_y:
+                # 向 y 轴下方移动
+                self.rect.y += self.move_speed
+                if self.rect.y > self.next_y:
+                    # 如果大于下一个格子的 y 轴值，修正下
+                    self.rect.y = self.next_y
+            else:
+                # 向 y 轴上方移动
+                self.rect.y -= self.move_speed
+                if self.rect.y < self.next_y:
+                    # 如果小于下一个格子的 y 轴值，修正下
+                    self.rect.y = self.next_y
 
     def attack(self, enemy, map):
         hurt = self.attr.getHurt(enemy.attr)
