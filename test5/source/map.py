@@ -184,6 +184,11 @@ class Map():
                     color = c.SKY_BLUE
                 elif self.bg_map[y][x] == c.BG_RANGE:
                     color = c.NAVYBLUE
+                elif self.bg_map[y][x] == c.BG_SELECT:
+                    color = c.GREEN
+                elif self.bg_map[y][x] == c.BG_ATTACK:
+                    color = c.GOLD
+                
                 pg.draw.rect(surface, color, (x * c.REC_SIZE, y * c.REC_SIZE, 
                         c.REC_SIZE, c.REC_SIZE))
         
