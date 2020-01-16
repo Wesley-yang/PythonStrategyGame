@@ -151,11 +151,11 @@ class Entity():
                 # 设置行走路径为 None
                 self.walk_path = None
                 if self.enemy is None:
-                    # 设置生物状态为攻击状态
-                    self.state = c.ATTACK
-                else:                  
                     # 设置生物状态为空闲状态
                     self.state = c.IDLE
+                else:
+                    # 设置生物状态为攻击状态
+                    self.state = c.ATTACK
         elif self.state == c.ATTACK:
             self.attack(self.enemy, map)
             self.enemy = None
