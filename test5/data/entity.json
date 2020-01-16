@@ -1,0 +1,11 @@
+{
+    "armorman":{
+        "health":100,
+        "range":6,
+        "damage":50,
+        "attack":6,
+        "defense":4,
+        "remote":0,
+        "speed":5
+    }
+}
