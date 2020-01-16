@@ -38,6 +38,10 @@ class Level(tool.State):
         self.group1 = entity.EntityGroup(0)
         # 根据关卡地图配置文件中的生物配置，创建生物组 1 的生物
         self.group1.createEntity(self.map_data[c.GROUP1], self.map)
+        # 创建生物组 2
+        self.group2 = entity.EntityGroup(1)
+        # 根据关卡地图配置文件中的生物配置，创建生物组 2 的生物
+        self.group2.createEntity(self.map_data[c.GROUP2], self.map)
 
     def update(self, surface, current_time, mouse_pos):
         '''游戏的更新函数'''
@@ -57,14 +61,16 @@ class Level(tool.State):
                 # 设置运行类状态为生物行为选择状态
                 self.state = c.SELECT
             else:
-                # 当前一轮所有生物都行动过了，进入下一轮
+                # 本轮两个生物组中的所有生物都行动过了，进入下一轮
                 self.group1.nextTurn()
+                self.group2.nextTurn()
         elif self.state == c.SELECT:
             if mouse_pos is not None:
                 self.mouseClick(mouse_pos)
         elif self.state == c.ENTITY_ACT:
-            # 更新生物的状态
+            # 更新两个生物组中生物的状态
             self.group1.update(current_time, self.map)
+            self.group2.update(current_time, self.map)
             if self.map.active_entity.state == c.IDLE:
                 # 当前行动生物状态变成空闲状态，表示生物行动结束
                 self.state = c.IDLE
@@ -76,8 +82,18 @@ class Level(tool.State):
     def getActiveEntity(self):
         # 从生物组 1 获取下一个行动的生物
         entity1 = self.group1.getActiveEntity()
-        if entity1:
+        # 从生物组 1 获取下一个行动的生物
+        entity2 = self.group2.getActiveEntity()
+        if entity1 and entity2:
+            # 比较生物的速度属性值，速度快的生物先行动
+            if entity1.attr.speed >= entity2.attr.speed:
+                entity, group = entity1, self.group1
+            else:
+                entity, group = entity2, self.group2
+        elif entity1:
             entity, group = entity1, self.group1
+        elif entity2:
+            entity, group = entity2, self.group2
         else:
             return None
         return (entity, group)
@@ -91,20 +107,22 @@ class Level(tool.State):
             self.state = c.ENTITY_ACT
     
     def checkGameState(self):
-        if (self.current_time - self.start_time) > 50000:
-            # 如果状态运行时间超过 50 秒，退出状态
+        # 如果有一个生物组没有生物了，关卡结束
+        if self.group1.isEmpty() or self.group2.isEmpty():
+            # 设置关卡运行状态结束
             self.done = True
-            # 使用choice 函数随机游戏结果为胜利或失败
-            win = random.choice([0, 1])
-            if win:
+            # 约定敌方是生物组 1，我方是生物组 2
+            if self.group1.isEmpty():
                 # 如果胜利，下一个状态是关卡胜利状态
                 self.next = c.LEVEL_WIN
             else:
-                # 如果胜利，下一个状态是关卡失败状态
+                # 如果失败，下一个状态是关卡失败状态
                 self.next = c.LEVEL_LOSE
 
     def draw(self, surface):
-        '''绘制游戏运行时的界面'''
+        # 绘制游戏地图显示
         self.map.drawBackground(surface)
+        # 绘制两个生物组中生物的图形
         self.group1.draw(surface)
+        self.group2.draw(surface)
         
