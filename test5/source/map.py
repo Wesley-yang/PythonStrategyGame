@@ -13,7 +13,10 @@ class Map():
         self.bg_map = [[0 for x in range(self.width)] for y in range(self.height)]
         # entity_map 是保存生物的二维数组，每个元素对应一个地图格子。
         self.entity_map = [[None for x in range(self.width)] for y in range(self.height)]
+        # 保存当前行动的生物
         self.active_entity = None
+        # 保存生物攻击时所在的地图位置
+        self.select = None
         self.setupMapImage(grid)
 
     def setupMapImage(self, grid):
@@ -50,12 +53,22 @@ class Map():
         return (x//c.REC_SIZE, y//c.REC_SIZE)
 
     def isMovable(self, map_x, map_y):
+        '''判断是否能移动到传入的地图格子位置'''
         return (self.grid_map[map_y][map_x] != c.MAP_STONE and
                 self.entity_map[map_y][map_x] == None )
 
     def calHeuristicDistance(self, x1, y1, x2, y2):
         '''估计地图两个格点之间的距离'''
         return abs(x1 - x2) + abs(y1 - y2)
+    
+    def getDistance(self, x1, y1, map_x2, map_y2):
+        map_x1, map_y1 = self.getMapIndex(x1, y1)
+        x2 = map_x2 * c.REC_SIZE + c.REC_SIZE//2
+        y2 = map_y2 * c.REC_SIZE + c.REC_SIZE//2
+        distance = (abs(x1 - x2) + abs(y1 - y2))
+        if map_x1 != map_x2 and map_y1 != map_y2:
+           distance -= c.REC_SIZE//2
+        return distance
     
     def isInRange(self, source_x, source_y, dest_x, dest_y, max_distance):
         '''调用 A* 算法函数获取两个格子之间的距离，判断是否小于等于传入的参数 max_distance'''
@@ -69,14 +82,14 @@ class Map():
         x, y = mouse_pos
         # 获取鼠标位置所在的地图位置
         map_x, map_y = self.getMapIndex(x, y)
-        # 获取行动生物所在的地图位置
-        entity_x, entity_y = self.active_entity.getMapIndex()
-        # 获取行动生物的行走距离
-        distance = self.active_entity.distance
         
-        if self.isInRange(entity_x, entity_y, map_x, map_y, distance):
-            # 如果鼠标位置和生物位置的距离小于等于生物行走距离，设置为生物的目的位置
+        if self.bg_map[map_y][map_x] == c.BG_SELECT:
+            # 设置为生物的目的位置
             self.active_entity.setDestination(self, map_x, map_y)
+            return True
+        elif self.bg_map[map_y][map_x] == c.BG_ATTACK:
+            entity = self.entity_map[map_y][map_x]
+            self.active_entity.setDestination(self, map_x, map_y, entity)
             return True
         return False
     
@@ -91,9 +104,10 @@ class Map():
         map_x, map_y = self.active_entity.getMapIndex()
         # 获取行动生物的行走距离
         distance = self.active_entity.distance
-
-        self.resetBackGround()
-
+        
+        # 设置行动生物所在的格子类型为 c.BG_ACTIVE
+        self.bg_map[map_y][map_x] = c.BG_ACTIVE
+        
         if self.isValid(map_x, map_y):
             self.bg_map[map_y][map_x] = c.BG_ACTIVE
             for y in range(self.height):
@@ -105,6 +119,55 @@ class Map():
                     if self.isInRange(map_x, map_y, x, y, distance):
                         # 设置距离小于等于生物行走距离的格子类型为 c.BG_RANGE
                         self.bg_map[y][x] = c.BG_RANGE
+
+    def checkMouseMove(self, mouse_pos):
+        x, y = mouse_pos
+        # 获取鼠标位置所在的地图位置
+        map_x, map_y = self.getMapIndex(x, y)
+        
+        if not self.isValid(map_x, map_y):
+            # 如果是无效的地图位置，返回
+            return False
+        
+        # 获取行动生物所在的地图位置
+        x, y = self.active_entity.getMapIndex()
+        # 获取行动生物的行走距离
+        distance = self.active_entity.distance
+        
+        self.select = None
+        entity = self.entity_map[map_y][map_x]
+        if entity is None: 
+            if self.isInRange(self, x, y, map_x, map_y, distance):
+                self.bg_map[map_y][map_x] = c.BG_SELECT
+        elif entity == self.active_entity:
+            self.bg_map[map_y][map_x] = c.BG_SELECT
+        elif entity.group_id != self.active_entity.group_id:
+            dir_list = tool.getAttackPositions(map_x, map_y)
+            res_list = []
+            for offset_x, offset_y in dir_list:
+                if self.isValid(map_x + offset_x, map_y + offset_y):
+                    type = self.bg_map[map_y + offset_y][map_x + offset_x]
+                    if type == c.BG_RANGE or type == c.BG_ACTIVE:
+                        res_list.append((map_x + offset_x, map_y + offset_y))
+            if len(res_list) > 0:
+                min_dis = c.MAP_WIDTH
+                for tmp_x, tmp_y in res_list:
+                    distance = self.getDistance(x, y, tmp_x, tmp_y)
+                    if distance < min_dis:
+                        min_dis = distance
+                        res = (tmp_x, tmp_y)
+                self.bg_map[res[1]][res[0]] = c.BG_SELECT
+                self.bg_map[map_y][map_x] = c.BG_ATTACK
+                self.select = res
+       
+    def updateMapShow(self, mouse_pos):
+        self.resetBackGround()
+        
+        if self.active_entity is None or self.active_entity.state != c.IDLE:
+            return
+        
+        self.showActiveEntityRange()
+        self.checkMouseMove(mouse_pos)
 
     def setEntity(self, map_x, map_y, value):
         # value 为 None，清除 entity_map 数组中指定位置的设置，
