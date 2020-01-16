@@ -145,11 +145,23 @@ def getMapGridImage():
         grid_images[type] = getImage(GFX['tile'], *rect, c.WHITE, 3)
     return grid_images
 
+def load_entiry_attr(file_path):
+    attrs = {}
+    f = open(file_path)
+    data = json.load(f)
+    f.close()
+    for name, attr in data.items():
+        attrs[name] = attr
+    return attrs
+
 def getMovePositions(x, y):
-    # 从当前的格子可以移动到相邻的左边，上面，右边，下面四个格子。
+    # 从当前的格子可以移动到相邻的左边，上面，右边，下面四个格子
     offsets = [(-1,0), (0, -1), (1, 0), (0, 1)]
     return offsets
-        
+
+def getAttackPositions(x, y):
+    return [(-1,-1), (-1,0), (-1,1), (0,-1), (0,1), (1,-1),(1,0), (1,1)]
+
 # pygame的初始化
 pg.init()
 # 设置游戏窗口的标题
@@ -161,3 +173,5 @@ pg.display.set_mode(c.SCREEN_SIZE)
 GFX = loadAllGraphics(os.path.join("resources","graphics"))
 # 获取地图格子类型的图片
 GRID = getMapGridImage()
+# 加载生物属性的配置文件
+ATTR = load_entiry_attr(os.path.join('source', 'data', 'entity.json'))
