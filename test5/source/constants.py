@@ -34,6 +34,7 @@ MAP_GRASS = 2 # 格子中是草地
 # 地图配置文件中的属性
 MAP_GRID = 'mapgrid'
 GROUP1 = 'group1'
+GROUP2 = 'group2'
 
 SIZE_MULTIPLIER = 1.3
 
@@ -76,3 +77,19 @@ ENTITY_ACT = 'entity act'
 # 生物的状态类型
 # 行走状态
 WALK = 'walk'
+# 攻击状态
+ATTACK = 'attack'
+
+# 生物的属性
+# 生命值
+ATTR_HEALTH = 'health'
+# 行走距离
+ATTR_DISTANCE = 'distance'
+# 伤害
+ATTR_DAMAGE = 'damage'
+# 攻击力
+ATTR_ATTACK = 'attack'
+# 防御力
+ATTR_DEFENSE = 'defense'
+# 速度
+ATTR_SPEED = 'speed'
