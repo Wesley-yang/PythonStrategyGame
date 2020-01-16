@@ -88,7 +88,9 @@ class Entity():
             self.walk_path = path
             self.dest_x, self.dest_y = self.getRectPos(map_x, map_y)
             # 保存路径中下一个格子的坐标
-            self.next_x, self.next_y = self.getNextPosition()
+            next_pos = self.getNextPosition()
+            if next_pos is not None:
+                self.next_x, self.next_y = next_pos
             # 保存敌方生物
             self.enemy = enemy
             # 设置生物状态为行走状态
