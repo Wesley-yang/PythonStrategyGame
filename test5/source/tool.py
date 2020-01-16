@@ -174,4 +174,4 @@ GFX = loadAllGraphics(os.path.join("resources","graphics"))
 # 获取地图格子类型的图片
 GRID = getMapGridImage()
 # 加载生物属性的配置文件
-ATTR = load_entiry_attr(os.path.join('source', 'data', 'entity.json'))
+ATTR = load_entiry_attr(os.path.join('data', 'entity.json'))
