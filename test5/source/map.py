@@ -119,9 +119,8 @@ class Map():
                     self.bg_map[y][x] = c.BG_RANGE
 
     def checkMouseMove(self, mouse_pos):
-        x, y = mouse_pos
         # 获取鼠标位置所在的地图位置
-        map_x, map_y = self.getMapIndex(x, y)
+        map_x, map_y = self.getMapIndex(*mouse_pos)
         
         if not self.isValid(map_x, map_y):
             # 如果是无效的地图位置，返回
@@ -150,7 +149,7 @@ class Map():
             if len(res_list) > 0:
                 min_dis = c.MAP_WIDTH
                 for tmp_x, tmp_y in res_list:
-                    distance = self.getDistance(x, y, tmp_x, tmp_y)
+                    distance = self.getDistance(*mouse_pos, tmp_x, tmp_y)
                     if distance < min_dis:
                         min_dis = distance
                         res = (tmp_x, tmp_y)
