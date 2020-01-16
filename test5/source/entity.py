@@ -180,7 +180,7 @@ class EntityGroup():
         # 当前行动的生物在生物组中的索引值
         self.entity_index = 0
 
-    def createEntity(self, entity_list, map):
+    def createEntity(self, entity_list, map, data):
         for data in entity_list:
             # 获取生物的名称和地图位置
             entity_name, map_x, map_y = data['name'], data['x'], data['y']
