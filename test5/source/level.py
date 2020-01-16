@@ -65,9 +65,11 @@ class Level(tool.State):
                 self.group1.nextTurn()
                 self.group2.nextTurn()
         elif self.state == c.SELECT:
+            self.map.updateMapShow(mouse_pos)
             if mouse_pos is not None:
                 self.mouseClick(mouse_pos)
         elif self.state == c.ENTITY_ACT:
+            self.map.updateMapShow(mouse_pos)
             # 更新两个生物组中生物的状态
             self.group1.update(current_time, self.map)
             self.group2.update(current_time, self.map)
