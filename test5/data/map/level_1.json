@@ -1,0 +1,12 @@
+{
+    "mapgrid":[
+        {"x": 3, "y": 7, "type":1},
+        {"x": 5, "y": 7, "type":1},
+        {"x": 5, "y": 5, "type":2}
+    ],
+    "group1":[
+        {"name":"footman", "x": 2, "y": 6},
+        {"name":"footman", "x": 4, "y": 6},
+        {"name":"footman", "x": 6, "y": 6}
+    ]
+}
