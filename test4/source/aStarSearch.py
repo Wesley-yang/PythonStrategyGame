@@ -140,6 +140,10 @@ def getAStarDistance(map, source, dest):
     return distance
 
 def getPath(map, source, dest):
+    # source 位置和 dest 位置相同时，返回 None
+    if source[0] == dest[0] and source[1] == dest[1]:
+        return None
+    
     # 如果找到路径，返回 source 位置到 dest 位置的路径每一步的列表
     path = None
     location = AStarSearch(map, source, dest)
