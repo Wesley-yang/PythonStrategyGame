@@ -10,7 +10,7 @@ class EntityAttr():
         # 生命
         self.max_health = data[c.ATTR_HEALTH]
         # 行走距离
-        self.range = data[c.ATTR_RANGE]
+        self.distance = data[c.ATTR_DISTANCE]
         # 伤害
         self.damage = data[c.ATTR_DAMAGE]
         # 攻击力
