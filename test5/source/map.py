@@ -89,7 +89,7 @@ class Map():
             return True
         elif self.bg_map[map_y][map_x] == c.BG_ATTACK:
             entity = self.entity_map[map_y][map_x]
-            self.active_entity.setDestination(self, map_x, map_y, entity)
+            self.active_entity.setDestination(self, self.select[0], self.select[1], entity)
             return True
         return False
     
