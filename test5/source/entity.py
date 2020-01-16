@@ -169,7 +169,11 @@ class Entity():
         # 获取当前显示的图形
         self.image = self.frames[self.frame_index]
         surface.blit(self.image, self.rect)
-
+        if self.health > 0:
+            # 绘制生物的生命条
+            width = self.rect.width * self.health / self.attr.max_health
+            height = 5
+            pg.draw.rect(surface, c.RED, pg.Rect(self.rect.left, self.rect.top - height - 1, width, height))
 
 class EntityGroup():
     def __init__(self, group_id):
