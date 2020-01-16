@@ -1,4 +1,13 @@
 {
+    "devil":{
+        "health":100,
+        "distance":5,
+        "damage":40,
+        "attack":5,
+        "defense":5,
+        "remote":0,
+        "speed":6
+    },
     "footman":{
         "health":100,
         "distance":5,
