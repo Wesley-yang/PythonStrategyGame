@@ -20,6 +20,8 @@ BLACK        = (  0,   0,   0)
 SKY_BLUE     = ( 39, 145, 251)
 NAVYBLUE     = ( 60,  60, 100)
 LIGHTYELLOW  = (247, 238, 214)
+GREEN        = (  0, 255,   0)
+GOLD         = (255, 215,   0)
 
 # 地图背景颜色类型
 BG_EMPTY = 0
