@@ -94,17 +94,19 @@ class Map():
 
         self.resetBackGround()
 
-        if self.isValid(map_x, map_y):
-            self.bg_map[map_y][map_x] = c.BG_ACTIVE
-            for y in range(self.height):
-                for x in range(self.width):
-                    if (not self.isMovable(x,y) or not self.isValid(x,y) or
-                        (x == map_x and y == map_y)):
-                        # 忽略不能移动，位置无效或者生物所在的地图格子
-                        continue
-                    if self.isInRange(map_x, map_y, x, y, distance):
-                        # 设置距离小于等于生物行走距离的格子类型为 c.BG_RANGE
-                        self.bg_map[y][x] = c.BG_RANGE
+        # 设置行动生物所在的格子类型为 c.BG_ACTIVE
+        self.bg_map[map_y][map_x] = c.BG_ACTIVE
+
+        # 设置行动生物行走距离内的格子类型为 c.BG_RANGE
+        for y in range(self.height):
+            for x in range(self.width):
+                if (not self.isMovable(x,y) or not self.isValid(x,y) or
+                    (x == map_x and y == map_y)):
+                    # 忽略不能移动，位置无效或者生物所在的地图格子
+                    continue
+                if self.isInRange(map_x, map_y, x, y, distance):
+                    # 设置距离小于等于生物行走距离的格子类型为 c.BG_RANGE
+                    self.bg_map[y][x] = c.BG_RANGE
 
     def setEntity(self, map_x, map_y, value):
         # value 为 None，清除 entity_map 数组中指定位置的设置，
