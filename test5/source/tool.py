@@ -1,4 +1,5 @@
 import os # 加载 os 模块
+import json # 加载 json 模块
 from abc import abstractmethod
 import pygame as pg  # 为了书写方便，将 pygame 缩写为pg
 from . import constants as c # 为了书写方便，将constants缩写为c
