@@ -25,6 +25,8 @@ LIGHTYELLOW  = (247, 238, 214)
 BG_EMPTY = 0
 BG_ACTIVE = 1
 BG_RANGE = 2
+BG_SELECT = 3
+BG_ATTACK = 4
 
 # 地图格子类型
 MAP_EMPTY = 0 # 格子是空的
