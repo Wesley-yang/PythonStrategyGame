@@ -137,7 +137,7 @@ class Map():
         self.select = None
         entity = self.entity_map[map_y][map_x]
         if entity is None: 
-            if self.isInRange(self, x, y, map_x, map_y, distance):
+            if self.isInRange(x, y, map_x, map_y, distance):
                 self.bg_map[map_y][map_x] = c.BG_SELECT
         elif entity == self.active_entity:
             self.bg_map[map_y][map_x] = c.BG_SELECT
