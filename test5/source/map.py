@@ -103,7 +103,7 @@ class Map():
         # 获取行动生物所在的地图位置
         map_x, map_y = self.active_entity.getMapIndex()
         # 获取行动生物的行走距离
-        distance = self.active_entity.distance
+        distance = self.active_entity.attr.distance
         
         # 设置行动生物所在的格子类型为 c.BG_ACTIVE
         self.bg_map[map_y][map_x] = c.BG_ACTIVE
@@ -132,7 +132,7 @@ class Map():
         # 获取行动生物所在的地图位置
         x, y = self.active_entity.getMapIndex()
         # 获取行动生物的行走距离
-        distance = self.active_entity.distance
+        distance = self.active_entity.attr.distance
         
         self.select = None
         entity = self.entity_map[map_y][map_x]
