@@ -5,8 +5,34 @@ from . import aStarSearch
 from . import map
 
 
+class EntityAttr():
+    def __init__(self, data):
+        # 生命
+        self.max_health = data[c.ATTR_HEALTH]
+        # 行走距离
+        self.range = data[c.ATTR_RANGE]
+        # 伤害
+        self.damage = data[c.ATTR_DAMAGE]
+        # 攻击力
+        self.attack = data[c.ATTR_ATTACK]
+        # 防御力
+        self.defense = data[c.ATTR_DEFENSE]
+        # 速度
+        self.speed = data[c.ATTR_SPEED]
+    
+    def getHurt(self, enemy_attr):
+        # 计算对一个敌方生物的攻击伤害，参考英雄无敌3的伤害计算公式
+        offset = 0
+        if self.attack > enemy_attr.defense:
+            offset = (self.attack - enemy_attr.defense) * 0.05
+        elif self.attack < enemy_attr.defense:
+            offset = (self.attack - enemy_attr.defense) * 0.025
+        hurt = int(self.damage * (1 + offset))
+        return hurt
+
+
 class Entity():
-    def __init__(self, group, name, map_x, map_y):
+    def __init__(self, group, name, map_x, map_y, data):
         # 保存生物所在的生物组，生物组id ，地图位置
         self.group = group
         self.group_id = group.group_id
@@ -20,7 +46,14 @@ class Entity():
         self.rect = self.image.get_rect()
         # 设置生物图形显示的位置
         self.rect.x, self.rect.y = self.getRectPos(map_x, map_y)
-
+        
+        # 创建生物属性对象
+        self.attr = EntityAttr(data)
+        # 保存生物的生命值
+        self.health = self.attr.max_health
+        # 生物攻击时保存的敌方生物
+        self.enemy = None
+        
         # 生物初始状态为空闲
         self.state = c.IDLE
         # 记录生物图形切换的时间，用来实现生物行走的动画效果
@@ -29,8 +62,6 @@ class Entity():
         self.current_time = 0.0
         # 生物行走时的速度
         self.move_speed = 2
-        # 生物行走的距离
-        self.distance = 4
         # 生物到目的位置的行走路径
         self.walk_path = None
     
@@ -49,7 +80,7 @@ class Entity():
             self.frames.append(tool.getImage(tool.GFX[name], 
                     *frame_rect, c.BLACK, c.SIZE_MULTIPLIER))
         
-    def setDestination(self, map, map_x, map_y):
+    def setDestination(self, map, map_x, map_y, enemy=None):
         # 获取到目的位置的行走路径
         path = aStarSearch.getPath(map, (self.map_x, self.map_y), (map_x, map_y))
         if path is not None:
@@ -58,6 +89,8 @@ class Entity():
             self.dest_x, self.dest_y = self.getRectPos(map_x, map_y)
             # 保存路径中下一个格子的坐标
             self.next_x, self.next_y = self.getNextPosition()
+            # 保存敌方生物
+            self.enemy = enemy
             # 设置生物状态为行走状态
             self.state = c.WALK
 
@@ -86,6 +119,15 @@ class Entity():
         elif self.rect.y != self.next_y:
             self.rect.y += self.move_speed if self.rect.y < self.next_y else -self.move_speed
 
+    def attack(self, enemy):
+        hurt = self.attr.getHurt(enemy.attr)
+        enemy.setHurt(hurt)
+
+    def setHurt(self, damage):
+        self.health -= damage
+        if self.health <= 0
+            self.group.removeEntity(self)
+            
     def update(self, current_time, map):
         self.current_time = current_time
         if self.state == c.WALK:
@@ -107,9 +149,17 @@ class Entity():
                 map.setEntity(self.map_x, self.map_y, self)
                 # 设置行走路径为 None
                 self.walk_path = None
-                # 设置生物状态为空闲状态
-                self.state = c.IDLE
-        
+                if self.enemy is None:
+                    # 设置生物状态为攻击状态
+                    self.state = c.ATTACK
+                else:                  
+                    # 设置生物状态为空闲状态
+                    self.state = c.IDLE
+        elif self.state == c.ATTACK:
+            self.attack(self.enemy)
+            self.enemy = None
+            self.state = c.IDLE
+    
         if self.state == c.IDLE:
             # 如果是空闲状态，设置显示图形索引为 0
             self.frame_index = 0
@@ -144,7 +194,23 @@ class EntityGroup():
             self.group.append(entity)
             # 在地图中设置生物所在的位置
             map.setEntity(map_x, map_y, entity)
+        
+        # 按照生物的速度从大到小排序，速度快的生物优先行动
+        self.group = sorted(self.group, key=lambda x:x.attr.speed, reverse=True)
 
+    def removeEntity(self, entity):
+        for i in range(len(self.group)):
+            if self.group[i] == entity:
+                if (self.entity_index > i or
+                    (self.entity_index >= len(self.group) - 1)):
+                    self.entity_index -= 1
+        self.group.remove(entity)
+    
+    def isEmpty(self):
+        if len(self.group) == 0:
+            return True
+        return False
+    
     def nextTurn(self):
         # 生物组所有生物已经行动过一轮，重新开始下一轮
         self.entity_index = 0
