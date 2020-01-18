@@ -22,6 +22,7 @@ class Level(tool.State):
         self.map = map.Map(c.GRID_X_LEN, c.GRID_Y_LEN, grid)
         # 创建生物组
         self.setupGroup()
+        # 设置初始状态为空闲状态
         self.state = c.IDLE
     
     def loadMap(self):
@@ -35,12 +36,12 @@ class Level(tool.State):
 
     def setupGroup(self):
         # 创建生物组 1
-        self.group1 = entity.EntityGroup(0)
-        # 根据关卡地图配置文件中的生物配置，创建生物组 1 的生物
+        self.group1 = entity.EntityGroup(1)
+        # 根据关卡地图配置文件中的生物组 1 的配置，创建生物组 1 的生物
         self.group1.createEntity(self.map_data[c.GROUP1], self.map)
         # 创建生物组 2
-        self.group2 = entity.EntityGroup(1)
-        # 根据关卡地图配置文件中的生物配置，创建生物组 2 的生物
+        self.group2 = entity.EntityGroup(2)
+        # 根据关卡地图配置文件中的生物组 2 配置，创建生物组 2 的生物
         self.group2.createEntity(self.map_data[c.GROUP2], self.map)
 
     def update(self, surface, current_time, mouse_pos):
