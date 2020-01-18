@@ -55,7 +55,7 @@ class Map():
     def isMovable(self, map_x, map_y):
         '''判断是否能移动到传入的地图格子位置'''
         return (self.grid_map[map_y][map_x] != c.MAP_STONE and
-                self.entity_map[map_y][map_x] == None )
+                self.entity_map[map_y][map_x] == None)
 
     def calHeuristicDistance(self, x1, y1, x2, y2):
         '''估计地图两个格点之间的距离'''

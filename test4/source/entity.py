@@ -18,8 +18,8 @@ class Entity():
         self.loadFrames(name)
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect()
-        # 设置生物图形显示的位置
-        self.rect.x, self.rect.y = self.getRectPos(map_x, map_y)
+        # 设置生物图形显示坐标
+        self.rect.centerx, self.rect.centery = self.getRectPos(map_x, map_y)
 
         # 生物初始状态为空闲
         self.state = c.IDLE
@@ -33,14 +33,6 @@ class Entity():
         self.distance = 4
         # 生物到目的位置的行走路径
         self.walk_path = None
-    
-    def getMapIndex(self):
-        '''返回生物的地图位置'''
-        return (self.map_x, self.map_y)
-
-    def getRectPos(self, map_x, map_y):
-        '''返回在地图格子中显示生物图形的坐标'''
-        return(map_x * c.REC_SIZE + 5, map_y * c.REC_SIZE + 8)
 
     def loadFrames(self, name):
         # 加载生物的图形列表
@@ -48,6 +40,14 @@ class Entity():
         for frame_rect in frame_rect_list:
             self.frames.append(tool.getImage(tool.GFX[name], 
                     *frame_rect, c.BLACK, c.SIZE_MULTIPLIER))
+
+    def getMapIndex(self):
+        '''返回生物的地图位置'''
+        return (self.map_x, self.map_y)
+
+    def getRectPos(self, map_x, map_y):
+        '''返回在地图格子中显示生物图形的坐标'''
+        return(map_x * c.REC_SIZE + c.REC_SIZE // 2, map_y * c.REC_SIZE + c.REC_SIZE // 2)
         
     def setDestination(self, map, map_x, map_y):
         # 获取到目的位置的行走路径
@@ -55,9 +55,10 @@ class Entity():
         if path is not None:
             # 找到一条路径，保存路径和目的坐标
             self.walk_path = path
+            # 设置目的位置坐标
             self.dest_x, self.dest_y = self.getRectPos(map_x, map_y)
-            # 保存路径中下一个格子的坐标
-            self.next_x, self.next_y = self.getNextPosition()
+            # 设置下一个格子的坐标为当前位置坐标
+            self.next_x, self.next_y = self.rect.centerx, self.rect.centery
             # 设置生物状态为行走状态
             self.state = c.WALK
 
@@ -71,33 +72,56 @@ class Entity():
         return None
  
     def walkToDestination(self):
-        if self.rect.x == self.next_x and self.rect.y == self.next_y:
+        if self.rect.centerx == self.next_x and self.rect.centery == self.next_y:
             # 已经行走到下一个格子的坐标，继续获取再下一个格子的坐标
             pos = self.getNextPosition()
             if pos is None:
                 self.state = c.IDLE
             else:
                 # 保存路径中下一个格子的坐标
-                self.next_x, self.next_y =  pos
+                self.next_x, self.next_y = pos
 
-        # 行走到下一个格子的坐标，先移动 x 轴方向，在移动 y 轴方向
-        if self.rect.x != self.next_x:
-            self.rect.x += self.move_speed if self.rect.x < self.next_x else -self.move_speed
-        elif self.rect.y != self.next_y:
-            self.rect.y += self.move_speed if self.rect.y < self.next_y else -self.move_speed
+        # 行走到下一个格子的坐标，先移动 x 轴方向，再移动 y 轴方向
+        if self.rect.centerx != self.next_x:
+            if self.rect.centerx < self.next_x:
+                # 向 x 轴右边移动
+                self.rect.centerx += self.move_speed
+                if self.rect.centerx > self.next_x:
+                    # 如果大于下一个格子的 x 轴值，修正下
+                    self.rect.centerx = self.next_x
+            else:
+                # 向 x 轴左边移动
+                self.rect.centerx -= self.move_speed
+                if self.rect.centerx < self.next_x:
+                    # 如果小于下一个格子的 x 轴值，修正下
+                    self.rect.centerx = self.next_x
+        elif self.rect.centery != self.next_y:
+            if self.rect.centery < self.next_y:
+                # 向 y 轴下方移动
+                self.rect.centery += self.move_speed
+                if self.rect.centery > self.next_y:
+                    # 如果大于下一个格子的 y 轴值，修正下
+                    self.rect.centery = self.next_y
+            else:
+                # 向 y 轴上方移动
+                self.rect.centery -= self.move_speed
+                if self.rect.centery < self.next_y:
+                    # 如果小于下一个格子的 y 轴值，修正下
+                    self.rect.centery = self.next_y
 
     def update(self, current_time, map):
         self.current_time = current_time
         if self.state == c.WALK:
             if (self.current_time - self.animate_timer) > 200:
-                # 当前图形显示时间超过 200 毫秒，切合图形索引值
+                # 当前图形显示时间超过 200 毫秒，切换图形索引值
                 if self.frame_index == 0:
                     self.frame_index = 1
                 else:
                     self.frame_index = 0
+                # 更新生物图形切换的时间
                 self.animate_timer = self.current_time
     
-            if self.rect.x != self.dest_x or self.rect.y != self.dest_y:
+            if self.rect.centerx != self.dest_x or self.rect.centery != self.dest_y:
                 # 如果还没走到目的坐标，继续行走
                 self.walkToDestination()
             else:
@@ -111,7 +135,7 @@ class Entity():
                 self.state = c.IDLE
         
         if self.state == c.IDLE:
-            # 如果是空闲状态，设置显示图形索引为 0
+            # 如果是空闲状态，设置图形索引值为 0
             self.frame_index = 0
 
     def draw(self, surface):
@@ -122,11 +146,11 @@ class Entity():
 
 class EntityGroup():
     def __init__(self, group_id):
-        # 生物组列表
+        # 生物列表
         self.group = []
         # 本生物组对象的 id 值
         self.group_id = group_id
-        # 当前行动的生物在生物组中的索引值
+        # 当前行动的生物在生物列表中的索引值
         self.entity_index = 0
 
     def createEntity(self, entity_list, map):
@@ -162,9 +186,9 @@ class EntityGroup():
         # 每次生物行动结束后调用，索引值指向下一个将要行动的生物
         self.entity_index += 1
 
-    def update(self, current_time, map):       
+    def update(self, current_time, map):
+        # 调用本生物组中所有生物的更新函数
         for entity in self.group:
-            #  调用生物的更新函数
             entity.update(current_time, map)
 
     def draw(self, surface):

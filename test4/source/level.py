@@ -35,7 +35,7 @@ class Level(tool.State):
 
     def setupGroup(self):
         # 创建生物组 1
-        self.group1 = entity.EntityGroup(0)
+        self.group1 = entity.EntityGroup(1)
         # 根据关卡地图配置文件中的生物配置，创建生物组 1 的生物
         self.group1.createEntity(self.map_data[c.GROUP1], self.map)
 

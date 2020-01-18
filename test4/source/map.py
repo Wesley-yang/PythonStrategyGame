@@ -13,6 +13,7 @@ class Map():
         self.bg_map = [[0 for x in range(self.width)] for y in range(self.height)]
         # entity_map 是保存生物的二维数组，每个元素对应一个地图格子。
         self.entity_map = [[None for x in range(self.width)] for y in range(self.height)]
+        # 保存当前行动生物
         self.active_entity = None
         self.setupMapImage(grid)
 
@@ -50,8 +51,9 @@ class Map():
         return (x//c.REC_SIZE, y//c.REC_SIZE)
 
     def isMovable(self, map_x, map_y):
+        '''判断传入的地图位置所在的格子是否是可移动的'''
         return (self.grid_map[map_y][map_x] != c.MAP_STONE and
-                self.entity_map[map_y][map_x] == None )
+                self.entity_map[map_y][map_x] == None)
 
     def calHeuristicDistance(self, x1, y1, x2, y2):
         '''估计地图两个格点之间的距离'''
@@ -67,7 +69,7 @@ class Map():
 
     def checkMouseClick(self, mouse_pos):
         x, y = mouse_pos
-        # 获取鼠标位置所在的地图位置
+        # 获取鼠标点击所在的地图位置
         map_x, map_y = self.getMapIndex(x, y)
         # 获取行动生物所在的地图位置
         entity_x, entity_y = self.active_entity.getMapIndex()
@@ -110,7 +112,7 @@ class Map():
 
     def setEntity(self, map_x, map_y, value):
         # value 为 None，清除 entity_map 数组中指定位置的设置，
-        # value 不为 None， 添加生物到 entity_map 数组中指定位置
+        # value 不为 None，添加生物到 entity_map 数组中指定位置
         self.entity_map[map_y][map_x] = value
 
     def drawBackground(self, surface):
