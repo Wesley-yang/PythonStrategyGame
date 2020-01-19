@@ -62,12 +62,15 @@ class Map():
         return abs(x1 - x2) + abs(y1 - y2)
     
     def getDistance(self, x1, y1, map_x2, map_y2):
+        # 计算坐标（x1，y2）和 地图格子（map_x2, map_y2) 的中心位置之间的距离
         map_x1, map_y1 = self.getMapIndex(x1, y1)
         x2 = map_x2 * c.REC_SIZE + c.REC_SIZE//2
         y2 = map_y2 * c.REC_SIZE + c.REC_SIZE//2
+        # 距离计算采用最简单的方式，计算 x 轴和 y 轴差值的和
         distance = (abs(x1 - x2) + abs(y1 - y2))
         if map_x1 != map_x2 and map_y1 != map_y2:
-           distance -= c.REC_SIZE//2
+            # 如果是对角线上的相邻位置，距离计算会偏大，要减去一个值
+            distance -= c.REC_SIZE//2
         return distance
     
     def isInRange(self, source_x, source_y, dest_x, dest_y, max_distance):
@@ -84,11 +87,13 @@ class Map():
         map_x, map_y = self.getMapIndex(x, y)
         
         if self.bg_map[map_y][map_x] == c.BG_SELECT:
-            # 设置为生物的目的位置
+            # 如果格子类型是 c.BG_SELECT，表示这个格子是要行走到的目的位置
             self.active_entity.setDestination(self, map_x, map_y)
             return True
         elif self.bg_map[map_y][map_x] == c.BG_ATTACK:
+            # 如果格子类型是 c.BG_ATTACK，表示这个格子上是被攻击的敌方生物
             entity = self.entity_map[map_y][map_x]
+            # self.select 保存了生物攻击前要行走到的目的位置
             self.active_entity.setDestination(self, self.select[0], self.select[1], entity)
             return True
         return False
@@ -132,29 +137,41 @@ class Map():
         distance = self.active_entity.attr.distance
         
         self.select = None
+        # 判断鼠标所在的地图格子上是否有生物
         entity = self.entity_map[map_y][map_x]
         if entity is None: 
+            # 鼠标所在的地图格子上没有生物
             if self.isInRange(x, y, map_x, map_y, distance):
                 self.bg_map[map_y][map_x] = c.BG_SELECT
         elif entity == self.active_entity:
+            # 鼠标所在的地图格子上的生物就是当前行动的生物
             self.bg_map[map_y][map_x] = c.BG_SELECT
         elif entity.group_id != self.active_entity.group_id:
+            # 鼠标所在的地图格子上的生物是敌方生物
             dir_list = tool.getAttackPositions(map_x, map_y)
+            # 保存行走生物可移动到格子的列表
             res_list = []
             for offset_x, offset_y in dir_list:
+                # 遍历鼠标所在地图格子的相邻八个格子
                 if self.isValid(map_x + offset_x, map_y + offset_y):
                     type = self.bg_map[map_y + offset_y][map_x + offset_x]
                     if type == c.BG_RANGE or type == c.BG_ACTIVE:
+                        # 如果这个格子是当前行动生物可以行动到的，添加到列表中
                         res_list.append((map_x + offset_x, map_y + offset_y))
             if len(res_list) > 0:
+                # 如果格子列表不为空，表示行走生物可以攻击到这个敌方生物。
                 min_dis = c.MAP_WIDTH
+                # 根据鼠标坐标，在格子列表中找到一个距离最小的格子
                 for tmp_x, tmp_y in res_list:
                     distance = self.getDistance(*mouse_pos, tmp_x, tmp_y)
                     if distance < min_dis:
                         min_dis = distance
                         res = (tmp_x, tmp_y)
+                # 设置这个和鼠标坐标距离最小的格子类型为 c.BG_SELECT
                 self.bg_map[res[1]][res[0]] = c.BG_SELECT
+                # 设置鼠标所在地图格子类型为 c.BG_ATTACK
                 self.bg_map[map_y][map_x] = c.BG_ATTACK
+                # 保存距离最小格子的地图位置
                 self.select = res
        
     def updateMapShow(self, mouse_pos):
