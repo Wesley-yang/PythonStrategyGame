@@ -233,6 +233,7 @@ class EntityGroup():
         self.group = sorted(self.group, key=lambda x:x.attr.speed, reverse=True)
 
     def removeEntity(self, entity):
+        # 一个生物死亡时，从生物组中删除，并更新生物列表中的索引值
         for i in range(len(self.group)):
             if self.group[i] == entity:
                 if (self.entity_index > i or
@@ -241,6 +242,7 @@ class EntityGroup():
         self.group.remove(entity)
     
     def isEmpty(self):
+        # 如果生物列表为空，返回 True, 否则返回 False
         if len(self.group) == 0:
             return True
         return False

@@ -127,8 +127,9 @@ class Map():
         # 获取鼠标位置所在的地图位置
         map_x, map_y = self.getMapIndex(*mouse_pos)
         
-        if not self.isValid(map_x, map_y):
-            # 如果是无效的地图位置，返回
+        if (not self.isValid(map_x, map_y) or 
+            self.grid_map[map_y][map_x] == c.MAP_STONE):
+            # 如果是无效的地图位置或者地图格子上是石头，返回
             return False
         
         # 获取行动生物所在的地图位置

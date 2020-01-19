@@ -87,6 +87,6 @@ def getAction(entity, map, enemy_group):
         x, y = aStarSearch.getPosInRange(best_info.location, range)
         return (x, y, None)
     else:
-        range = best_info.distance - entity.attr.range
+        range = best_info.distance - entity.attr.distance
         x, y = aStarSearch.getPosInRange(best_info.location, range)
         return (x, y, None)
