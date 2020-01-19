@@ -66,10 +66,12 @@ class Level(tool.State):
                 self.group1.nextTurn()
                 self.group2.nextTurn()
         elif self.state == c.SELECT:
+            # 更新地图的背景显示
             self.map.updateMapShow(pg.mouse.get_pos())
             if mouse_pos is not None:
                 self.mouseClick(mouse_pos)
-        elif self.state == c.ENTITY_ACT:       
+        elif self.state == c.ENTITY_ACT:
+            # 更新地图的背景显示
             self.map.updateMapShow(pg.mouse.get_pos())
             # 更新两个生物组中生物的状态
             self.group1.update(current_time, self.map)
@@ -85,17 +87,20 @@ class Level(tool.State):
     def getActiveEntity(self):
         # 从生物组 1 获取下一个行动的生物
         entity1 = self.group1.getActiveEntity()
-        # 从生物组 1 获取下一个行动的生物
+        # 从生物组 2 获取下一个行动的生物
         entity2 = self.group2.getActiveEntity()
         if entity1 and entity2:
-            # 比较生物的速度属性值，速度快的生物先行动
+            # 本轮中生物组 1 和生物组 2 都有待行动的生物，
+            # 则比较两个生物的速度属性值，速度快的生物先行动
             if entity1.attr.speed >= entity2.attr.speed:
                 entity, group = entity1, self.group1
             else:
                 entity, group = entity2, self.group2
         elif entity1:
+            # 本轮中只有生物组 1 还有待行动的生物
             entity, group = entity1, self.group1
         elif entity2:
+            # 本轮中只有生物组 2 还有待行动的生物
             entity, group = entity2, self.group2
         else:
             return None
