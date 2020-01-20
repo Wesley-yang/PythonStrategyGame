@@ -55,8 +55,6 @@ class Level(tool.State):
                 entity, group = result
                 # 保存当前行动生物
                 self.map.active_entity = entity
-                # 显示当前行动生物可以行走的范围
-                self.map.showActiveEntityRange()
                 # 更新生物组的下一个行动生物索引
                 group.consumeEntity()
                 # 设置运行类状态为生物行为选择状态
