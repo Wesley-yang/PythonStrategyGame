@@ -58,6 +58,8 @@ class Entity():
         self.state = c.IDLE
         # 记录生物图形切换的时间，用来实现生物行走的动画效果
         self.animate_timer = 0.0
+        # 生物攻击定时器，用来实现生物的攻击效果
+        self.attack_timer = 0
         # 记录游戏当前时间
         self.current_time = 0.0
         # 生物行走时的速度
@@ -186,9 +188,13 @@ class Entity():
                     # 设置生物状态为攻击状态
                     self.state = c.ATTACK
         elif self.state == c.ATTACK:
-            self.attack(self.enemy, map)
-            self.enemy = None
-            self.state = c.IDLE
+            if self.attack_timer == 0:
+                self.attack(self.enemy, map)
+                self.enemy = None
+                self.attack_timer = self.current_time
+            elif (self.current_time - self.attack_timer) > 500:
+                self.attack_timer = 0
+                self.state = c.IDLE
     
         if self.state == c.IDLE:
             # 如果是空闲状态，设置图形索引值为 0
