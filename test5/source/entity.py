@@ -33,8 +33,8 @@ class EntityAttr():
         # 如果攻击伤害超过了上下限范围，修正攻击伤害值
         if hurt > self.damage * 4:
             hurt = self.damage * 4
-        elif hurt < self.dagame / 4:
-            hurt = self.dagame / 4
+        elif hurt < self.damage / 4:
+            hurt = self.damage / 4
         return int(hurt)
 
 

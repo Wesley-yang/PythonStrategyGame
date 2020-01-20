@@ -33,8 +33,8 @@ class EntityAttr():
         # 如果攻击伤害超过了上下限范围，修正攻击伤害值
         if hurt > self.damage * 4:
             hurt = self.damage * 4
-        elif hurt < self.dagame / 4:
-            hurt = self.dagame / 4
+        elif hurt < self.damage / 4:
+            hurt = self.damage / 4
         return int(hurt)
 
 
@@ -73,6 +73,9 @@ class Entity():
         self.move_speed = 2
         # 生物到目的位置的行走路径
         self.walk_path = None
+        
+        # 显示生物受到的伤害值
+        self.hurt_show = None
     
     def loadFrames(self, name):
         # 加载生物的图形列表
@@ -164,6 +167,9 @@ class Entity():
     def setHurt(self, damage, map):
         # 当前生命值减去攻击伤害值
         self.health -= damage
+        
+        self.hurt_show = HurtShow(self.rect.centerx, self.rect.y, damage)
+        
         if self.health <= 0:
             # 如果生命值小于等于 0， 表示生物死亡，删除地图中生物所在的位置
             map.setEntity(self.map_x, self.map_y, None)
@@ -213,6 +219,11 @@ class Entity():
         if self.state == c.IDLE:
             # 如果是空闲状态，设置图形索引值为 0
             self.frame_index = 0
+        
+        if self.hurt_show is not None:
+            self.hurt_show.update()
+            if self.hurt_show.shouldRemove():
+                self.hurt_show = None
 
     def draw(self, surface):
         # 获取当前显示的图形
@@ -223,6 +234,9 @@ class Entity():
             width = self.rect.width * self.health / self.attr.max_health
             height = 5
             pg.draw.rect(surface, c.RED, pg.Rect(self.rect.left, self.rect.top - height - 1, width, height))
+        
+        if self.hurt_show is not None:
+            self.hurt_show.draw(surface)
 
 class EntityGroup():
     def __init__(self, group_id):
@@ -293,3 +307,29 @@ class EntityGroup():
         # 绘制本生物组中的所有生物图形
         for entity in self.group:
             entity.draw(surface)
+
+class HurtShow():
+    def __init__(self, x, y, hurt):
+        self.y = y
+        self.createHurtImage(hurt)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = x
+        self.rect.bottom = y
+        self.y_vel = -1
+        self.distance = 50
+
+    def createHurtImage(self, hurt):
+        font = pg.font.SysFont(None, 30)
+        self.image = font.render(str(hurt), True, c.RED, c.WHITE)
+        self.image.set_colorkey(c.WHITE)
+
+    def shouldRemove(self):
+        if (self.y - self.rect.y) > self.distance:
+            return True
+        return False
+
+    def update(self):
+        self.rect.y += self.y_vel
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
