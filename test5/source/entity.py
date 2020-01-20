@@ -104,7 +104,7 @@ class Entity():
         elif enemy is not None:
             # 保存敌方生物
             self.enemy = enemy
-            # 设置生物状态为行走状态
+            # 设置生物状态为攻击状态
             self.state = c.ATTACK
 
     def getNextPosition(self):
