@@ -157,13 +157,17 @@ class Entity():
                     self.rect.centery = self.next_y
 
     def attack(self, enemy, map):
+        # 计算出对敌方生物的攻击伤害
         hurt = self.attr.getHurt(enemy.attr)
         enemy.setHurt(hurt, map)
 
     def setHurt(self, damage, map):
+        # 当前生命值减去攻击伤害值
         self.health -= damage
         if self.health <= 0:
+            # 如果生命值小于等于 0， 表示生物死亡，删除地图中生物所在的位置
             map.setEntity(self.map_x, self.map_y, None)
+            # 从生物组中删除生物
             self.group.removeEntity(self)
             
     def update(self, current_time, map):
