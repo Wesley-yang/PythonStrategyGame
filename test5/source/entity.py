@@ -11,24 +11,31 @@ class EntityAttr():
         self.max_health = data[c.ATTR_HEALTH]
         # 行走距离
         self.distance = data[c.ATTR_DISTANCE]
-        # 伤害
+        # 基础伤害
         self.damage = data[c.ATTR_DAMAGE]
-        # 攻击力
+        # 攻击
         self.attack = data[c.ATTR_ATTACK]
-        # 防御力
+        # 防御
         self.defense = data[c.ATTR_DEFENSE]
         # 速度
         self.speed = data[c.ATTR_SPEED]
     
     def getHurt(self, enemy_attr):
-        # 计算对一个敌方生物的攻击伤害，参考英雄无敌3的伤害计算公式
+        # 计算对一个敌方生物的攻击伤害，参考英雄无敌系列的伤害计算公式
         offset = 0
+        # 根据我方攻击和敌方防御的差值，计算伤害的加成或减弱
         if self.attack > enemy_attr.defense:
             offset = (self.attack - enemy_attr.defense) * 0.05
         elif self.attack < enemy_attr.defense:
             offset = (self.attack - enemy_attr.defense) * 0.025
+        # 计算出攻击伤害
         hurt = int(self.damage * (1 + offset))
-        return hurt
+        # 如果攻击伤害超过了上下限范围，修正攻击伤害值
+        if hurt > self.damage * 4:
+            hurt = self.damage * 4
+        elif hurt < self.dagame / 4:
+            hurt = self.dagame / 4
+        return int(hurt)
 
 
 class Entity():
@@ -148,13 +155,17 @@ class Entity():
                     self.rect.centery = self.next_y
 
     def attack(self, enemy, map):
+        # 计算出对敌方生物的攻击伤害
         hurt = self.attr.getHurt(enemy.attr)
         enemy.setHurt(hurt, map)
 
     def setHurt(self, damage, map):
+        # 当前生命值减去攻击伤害值
         self.health -= damage
         if self.health <= 0:
+            # 如果生命值小于等于 0， 表示生物死亡，删除地图中生物所在的位置
             map.setEntity(self.map_x, self.map_y, None)
+            # 从生物组中删除生物
             self.group.removeEntity(self)
             
     def update(self, current_time, map):
@@ -186,8 +197,10 @@ class Entity():
                     # 设置生物状态为攻击状态
                     self.state = c.ATTACK
         elif self.state == c.ATTACK:
+            # 对敌方生物造成伤害
             self.attack(self.enemy, map)
             self.enemy = None
+            # 设置生物状态为空闲状态
             self.state = c.IDLE
     
         if self.state == c.IDLE:
