@@ -90,11 +90,11 @@ ATTACK = 'attack'
 ATTR_HEALTH = 'health'
 # 行走距离
 ATTR_DISTANCE = 'distance'
-# 伤害
+# 基础伤害
 ATTR_DAMAGE = 'damage'
-# 攻击力
+# 攻击
 ATTR_ATTACK = 'attack'
-# 防御力
+# 防御
 ATTR_DEFENSE = 'defense'
 # 速度
 ATTR_SPEED = 'speed'
