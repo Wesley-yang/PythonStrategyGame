@@ -11,17 +11,17 @@ class EntityAttr():
         self.max_health = data[c.ATTR_HEALTH]
         # 行走距离
         self.distance = data[c.ATTR_DISTANCE]
-        # 伤害
+        # 杀伤
         self.damage = data[c.ATTR_DAMAGE]
-        # 攻击力
+        # 攻击
         self.attack = data[c.ATTR_ATTACK]
-        # 防御力
+        # 防御
         self.defense = data[c.ATTR_DEFENSE]
         # 速度
         self.speed = data[c.ATTR_SPEED]
     
     def getHurt(self, enemy_attr):
-        # 计算对一个敌方生物的攻击伤害，参考英雄无敌3的伤害计算公式
+        # 计算对一个敌方生物的攻击伤害，参考英雄无敌系列的伤害计算公式
         offset = 0
         if self.attack > enemy_attr.defense:
             offset = (self.attack - enemy_attr.defense) * 0.05
@@ -189,11 +189,14 @@ class Entity():
                     self.state = c.ATTACK
         elif self.state == c.ATTACK:
             if self.attack_timer == 0:
+                # 在进入生物攻击状态首次时，对敌方生物造成伤害
                 self.attack(self.enemy, map)
                 self.enemy = None
                 self.attack_timer = self.current_time
             elif (self.current_time - self.attack_timer) > 500:
+                # 生物的攻击定时器超时，重设生物的攻击定时器时间为 0
                 self.attack_timer = 0
+                # 设置生物状态为空闲状态
                 self.state = c.IDLE
     
         if self.state == c.IDLE:
