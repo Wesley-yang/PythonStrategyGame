@@ -11,7 +11,7 @@ class EntityAttr():
         self.max_health = data[c.ATTR_HEALTH]
         # 行走距离
         self.distance = data[c.ATTR_DISTANCE]
-        # 杀伤
+        # 基础伤害
         self.damage = data[c.ATTR_DAMAGE]
         # 攻击
         self.attack = data[c.ATTR_ATTACK]
@@ -23,12 +23,19 @@ class EntityAttr():
     def getHurt(self, enemy_attr):
         # 计算对一个敌方生物的攻击伤害，参考英雄无敌系列的伤害计算公式
         offset = 0
+        # 根据我方攻击和敌方防御的差值，计算伤害的加成或减弱
         if self.attack > enemy_attr.defense:
             offset = (self.attack - enemy_attr.defense) * 0.05
         elif self.attack < enemy_attr.defense:
             offset = (self.attack - enemy_attr.defense) * 0.025
+        # 计算出攻击伤害
         hurt = int(self.damage * (1 + offset))
-        return hurt
+        # 如果攻击伤害超过了上下限范围，修正攻击伤害值
+        if hurt > self.damage * 4:
+            hurt = self.damage * 4
+        elif hurt < self.dagame / 4:
+            hurt = self.dagame / 4
+        return int(hurt)
 
 
 class Entity():
