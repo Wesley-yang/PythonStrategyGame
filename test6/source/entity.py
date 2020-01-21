@@ -157,7 +157,10 @@ class Entity():
         self.enemy = enemy
         self.remote_attack = True
         self.state = c.ATTACK
-        
+    
+    def canRemoteAttack(self, enemy):
+        return self.attr.remote
+
     def getNextPosition(self):
         # 获取下一个格子的坐标
         if len(self.walk_path) > 0:
