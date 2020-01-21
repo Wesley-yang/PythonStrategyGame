@@ -98,3 +98,5 @@ ATTR_ATTACK = 'attack'
 ATTR_DEFENSE = 'defense'
 # 速度
 ATTR_SPEED = 'speed'
+# 是否是远程生物
+ATTR_REMOTE = 'remote'
