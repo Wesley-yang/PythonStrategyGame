@@ -71,8 +71,6 @@ class Level(tool.State):
             if mouse_pos is not None:
                 self.mouseClick(mouse_pos)
         elif self.state == c.ENTITY_ACT:
-            # 更新地图的背景显示
-            self.map.updateMapShow(pg.mouse.get_pos())
             # 更新两个生物组中生物的状态
             self.group1.update(current_time, self.map)
             self.group2.update(current_time, self.map)
