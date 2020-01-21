@@ -4,7 +4,7 @@ import random
 import pygame as pg
 from . import tool
 from . import constants as c
-from . import map, entity
+from . import map, entity, gameAI
 
 class Level(tool.State):
     def __init__(self):
@@ -66,9 +66,14 @@ class Level(tool.State):
                 self.group1.nextTurn()
                 self.group2.nextTurn()
         elif self.state == c.SELECT:
-            self.map.updateMapShow(pg.mouse.get_pos())
-            if mouse_pos is not None:
-                self.mouseClick(mouse_pos)
+            if self.map.active_entity.group_id == 1:
+                (map_x, map_y, enemy) = gameAI.getAction(self.map.active_entity, self.map, self.group2.group)
+                self.map.active_entity.setDestination(self.map, map_x, map_y, enemy)
+                self.state = c.ENTITY_ACT
+            else:
+                self.map.updateMapShow(pg.mouse.get_pos())
+                if mouse_pos is not None:
+                    self.mouseClick(mouse_pos)
         elif self.state == c.ENTITY_ACT:
             # 更新地图的背景显示
             self.map.updateMapShow(pg.mouse.get_pos())
