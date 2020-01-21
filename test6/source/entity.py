@@ -4,6 +4,37 @@ from . import constants as c
 from . import aStarSearch
 from . import map
 
+class FireBall():
+    def __init__(self, x, y, enemy, hurt):
+        # first 3 Frames are flying, last 4 frams are exploding
+        frame_rect = (0,0,14,14)
+        self.image = tool.get_image(tool.GFX[c.FIREBALL], *frame_rect, c.BLACK, c.SIZE_MULTIPLIER)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = x
+        self.rect.centery = y
+        self.enemy = enemy
+        self.hurt = hurt
+        self.done = False
+        self.calVelocity()
+    
+    def calVelocity(self):
+        #print('calVelocity: x:', self.enemy.rect.centerx, self.rect.centerx, 'y:', self.enemy.rect.centery,self.rect.centery)
+        dis_x = self.enemy.rect.centerx - self.rect.centerx
+        dis_y = self.enemy.rect.centery - self.rect.centery
+        distance = (dis_x ** 2 + dis_y ** 2) ** 0.5
+        self.x_vel = (dis_x * 10)/distance
+        self.y_vel = (dis_y * 10)/distance
+        
+    def update(self):
+        self.rect.x += self.x_vel
+        self.rect.y += self.y_vel
+        if abs(self.rect.x - self.enemy.rect.centerx) + abs(self.rect.y - self.enemy.rect.centery) < 25:
+            self.enemy.setHurt(self.hurt)
+            self.done = True
+    
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
 
 class EntityAttr():
     def __init__(self, data):
@@ -19,8 +50,13 @@ class EntityAttr():
         self.defense = data[c.ATTR_DEFENSE]
         # 速度
         self.speed = data[c.ATTR_SPEED]
+        # 是否是远程生物
+        if data[c.ATTR_REMOTE] == 0:
+            self.remote = False
+        else:
+            self.remote = True
     
-    def getHurt(self, enemy_attr):
+    def getHurt(self, enemy_attr, damage_half=False):
         # 计算对一个敌方生物的攻击伤害，参考英雄无敌系列的伤害计算公式
         offset = 0
         # 根据我方攻击和敌方防御的差值，计算伤害的加成或减弱
@@ -30,6 +66,9 @@ class EntityAttr():
             offset = (self.attack - enemy_attr.defense) * 0.025
         # 计算出攻击伤害
         hurt = int(self.damage * (1 + offset))
+        
+        # if damage_half:
+            hurt = hurt // 2
         # 如果攻击伤害超过了上下限范围，修正攻击伤害值
         if hurt > self.damage * 4:
             hurt = self.damage * 4
@@ -74,6 +113,8 @@ class Entity():
         # 生物到目的位置的行走路径
         self.walk_path = None
         
+        # 是否是远程攻击
+        self.remote_attack = False
         # 显示生物受到的伤害值
         self.hurt_show = None
     
@@ -111,7 +152,12 @@ class Entity():
             self.enemy = enemy
             # 设置生物状态为行走状态
             self.state = c.ATTACK
-
+    
+    def setRemoteTarget(self, enemy):
+        self.enemy = enemy
+        self.remote_attack = True
+        self.state = c.ATTACK
+        
     def getNextPosition(self):
         # 获取下一个格子的坐标
         if len(self.walk_path) > 0:
@@ -161,7 +207,10 @@ class Entity():
 
     def attack(self, enemy, map):
         # 计算出对敌方生物的攻击伤害
-        hurt = self.attr.getHurt(enemy.attr)
+        if self.attr.remote:
+            hurt = self.attr.getHurt(enemy.attr, True)
+        else:
+            hurt = self.attr.getHurt(enemy.attr)
         enemy.setHurt(hurt, map)
 
     def setHurt(self, damage, map):
@@ -175,7 +224,11 @@ class Entity():
             map.setEntity(self.map_x, self.map_y, None)
             # 从生物组中删除生物
             self.group.removeEntity(self)
-            
+
+    def shoot(self, enemy):
+        hurt = self.attr.getHurt(enemy.attr)
+        self.weapon = FireBall(*self.rect.center, self.enemy, hurt)
+
     def update(self, current_time, map):
         self.current_time = current_time
         if self.state == c.WALK:
@@ -205,16 +258,28 @@ class Entity():
                     # 设置生物状态为攻击状态
                     self.state = c.ATTACK
         elif self.state == c.ATTACK:
-            if self.attack_timer == 0:
-                # 在进入生物攻击状态首次时，对敌方生物造成伤害
-                self.attack(self.enemy, map)
-                self.enemy = None
-                self.attack_timer = self.current_time
-            elif (self.current_time - self.attack_timer) > 500:
-                # 生物的攻击定时器超时，重设生物的攻击定时器时间为 0
-                self.attack_timer = 0
-                # 设置生物状态为空闲状态
-                self.state = c.IDLE
+            if self.attr.remote and self.remote_attack:
+                # 远程生物进行远程攻击
+                if self.weapon is None:
+                    self.shoot(self.enemy)
+                else:
+                    self.weapon.update()
+                    if self.weapon.done:
+                        self.weapon = None
+                        self.enemy = None
+                        self.remote_attack = False
+                        self.state = c.IDLE
+            else:
+                if self.attack_timer == 0:
+                    # 在首次进入生物攻击状态时，对敌方生物造成伤害
+                    self.attack(self.enemy, map)
+                    self.enemy = None
+                    self.attack_timer = self.current_time
+                elif (self.current_time - self.attack_timer) > 500:
+                    # 生物的攻击定时器超时，重设生物的攻击定时器时间为 0
+                    self.attack_timer = 0
+                    # 设置生物状态为空闲状态
+                    self.state = c.IDLE
     
         if self.state == c.IDLE:
             # 如果是空闲状态，设置图形索引值为 0
