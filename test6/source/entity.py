@@ -177,7 +177,7 @@ class Entity():
                 # 遍历生物所在地图格子的相邻八个格子
                 tmp_x, tmp_y = self.map_x + offset_x, self.map_y + offset_y                    
                 if self.isValid(tmp_x, tmp_y):
-                    entity = map.entity_map[tmp_x][tmp_y]
+                    entity = map.entity_map[tmp_y][tmp_x]
                     if entity is not None and entity.group_id != self.group_id:
                         # 如果有敌方生物在相邻格子，不能进行远程攻击
                         return False
@@ -252,7 +252,9 @@ class Entity():
             self.group.removeEntity(self)
 
     def shoot(self, enemy):
+        # 获取攻击伤害
         hurt = self.attr.getHurt(enemy.attr)
+        # 创建火球对象
         self.weapon = FireBall(*self.rect.center, self.enemy, hurt)
 
     def update(self, current_time, level):
@@ -288,13 +290,17 @@ class Entity():
             if self.attr.remote and self.remote_attack:
                 # 远程生物进行远程攻击
                 if self.weapon is None:
+                    # 如果远程武器 weapon 是 None，创建远程武器
                     self.shoot(self.enemy)
                 else:
+                    # 调用远程武器的更新函数
                     self.weapon.update(level)
                     if self.weapon.done:
+                        # 远程武器已经攻击到敌方生物，恢复默认设置
                         self.weapon = None
                         self.enemy = None
                         self.remote_attack = False
+                        # 设置生物状态为空闲状态
                         self.state = c.IDLE
             else:
                 if self.attack_timer == 0:
