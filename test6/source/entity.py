@@ -23,7 +23,7 @@ class FireBall():
         # 计算火球开始坐标和敌方生物中心坐标之间的距离，分为 x 轴和 y 轴距离
         dis_x = self.enemy.rect.centerx - self.rect.centerx
         dis_y = self.enemy.rect.centery - self.rect.centery
-        # 计算火球在 x 轴和 y 轴的速度 
+        # 计算火球在 x 轴和 y 轴的速度，单位是像素
         self.x_vel = dis_x / 50
         self.y_vel = dis_y / 50
 
@@ -412,9 +412,9 @@ class HurtShow():
         # 设置伤害值的开始坐标
         self.rect.centerx = x
         self.rect.bottom = y
-        # 设置伤害值图形向上方移动的速度为 1，单位是杨素
+        # 设置伤害值图形向上方移动的速度为 1，单位是像素
         self.y_vel = -1
-        # 设置向上方移动的距离为 40，单位是杨素
+        # 设置向上方移动的距离为 40，单位是像素
         self.distance = 40
 
     def createHurtImage(self, hurt):
