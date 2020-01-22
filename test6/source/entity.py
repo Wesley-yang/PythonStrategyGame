@@ -8,7 +8,7 @@ class FireBall():
     def __init__(self, x, y, enemy, hurt):
         # 创建火球图形
         frame_rect = (0, 0, 14, 14)
-        self.image = tool.getImage(tool.GFX[c.FIREBALL], *frame_rect, c.BLACK, c.SIZE_MULTIPLIER)
+        self.image = tool.getImage(tool.GFX[c.FIREBALL], *frame_rect, c.WHITE, c.SIZE_MULTIPLIER)
         self.rect = self.image.get_rect()
         # 设置火球的开始坐标
         self.rect.centerx = x
