@@ -10,7 +10,7 @@ class FireBall():
         frame_rect = (0, 0, 14, 14)
         self.image = tool.getImage(tool.GFX[c.FIREBALL], *frame_rect, c.BLACK, c.SIZE_MULTIPLIER)
         self.rect = self.image.get_rect()
-        # 设置火球的开始位置
+        # 设置火球的开始坐标
         self.rect.centerx = x
         self.rect.centery = y
         self.enemy = enemy
@@ -20,7 +20,7 @@ class FireBall():
         self.calVelocity()
     
     def calVelocity(self):
-        # 计算火球开始位置和敌方生物之间的距离，分为 x 轴和 y 轴距离
+        # 计算火球开始坐标和敌方生物中心坐标之间的距离，分为 x 轴和 y 轴距离
         dis_x = self.enemy.rect.centerx - self.rect.centerx
         dis_y = self.enemy.rect.centery - self.rect.centery
         # 计算火球在 x 轴和 y 轴的速度 
@@ -28,10 +28,10 @@ class FireBall():
         self.y_vel = dis_y / 50
 
     def update(self, level):
-        # 更新火球的位置
+        # 更新火球的图形显示坐标
         self.rect.x += self.x_vel
         self.rect.y += self.y_vel
-        # 计算火球中心位置和敌方生物中心位置的距离
+        # 计算火球中心坐标和敌方生物中心坐标的距离
         distance = abs(self.rect.centerx - self.enemy.rect.centerx) + abs(self.rect.centery - self.enemy.rect.centery)
         if distance < self.enemy.rect.width / 2:
             # 距离小于敌方生物图形宽度的一半值时，认为火球和敌方生物发生了碰撞，产生伤害
@@ -404,26 +404,38 @@ class EntityGroup():
 
 class HurtShow():
     def __init__(self, x, y, hurt):
+        # 保存伤害显示的开始 y 轴坐标
         self.y = y
+        # 创建伤害值的图形
         self.createHurtImage(hurt)
         self.rect = self.image.get_rect()
+        # 设置伤害值的开始坐标
         self.rect.centerx = x
         self.rect.bottom = y
+        # 设置伤害值图形向上方移动的速度为 1，单位是杨素
         self.y_vel = -1
+        # 设置向上方移动的距离为 40，单位是杨素
         self.distance = 40
 
     def createHurtImage(self, hurt):
+        # 创建字体
         font = pg.font.SysFont(None, 30)
+        # 创建伤害值图形，字体颜色为红色，背景颜色是白色
         self.image = font.render(str(hurt), True, c.RED, c.WHITE)
+        # 设置图形的透明颜色为白色，这样图形显示效果就是透明的
         self.image.set_colorkey(c.WHITE)
 
     def shouldRemove(self):
+        # 判断是否要删除伤害值显示
         if (self.y - self.rect.y) > self.distance:
+            # 伤害值图形已经向上移动了指定的距离，可以删除
             return True
         return False
 
     def update(self):
+        # 根据 y 轴的速度更新伤害值图形显示的坐标
         self.rect.y += self.y_vel
 
     def draw(self, surface):
+        # 绘制伤害值图形
         surface.blit(self.image, self.rect)
