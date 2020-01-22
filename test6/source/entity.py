@@ -242,7 +242,7 @@ class Entity():
     def setHurt(self, damage, level):
         # 当前生命值减去攻击伤害值
         self.health -= damage
-        
+        # 创建伤害值显示对象，并添加到运行类的伤害值显示管理组中
         level.addHurtShow(HurtShow(self.rect.centerx, self.rect.y, damage))
         
         if self.health <= 0:
