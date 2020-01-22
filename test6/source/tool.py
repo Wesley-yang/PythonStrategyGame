@@ -163,11 +163,6 @@ def getMovePositions(x, y):
 def getAttackPositions(x, y):
     return [(-1,-1), (-1,0), (-1,1), (0,-1), (0,1), (1,-1),(1,0), (1,1)]
 
-def isNextToEntity(entity1, entity2):
-    if abs(entity1.map_x - entity2.map_x) <= 1 and abs(entity1.map_y - entity2.map_y) <= 1:
-        return True
-    return False
-
 # pygame的初始化
 pg.init()
 # 设置游戏窗口的标题
