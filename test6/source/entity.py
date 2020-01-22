@@ -6,31 +6,40 @@ from . import map
 
 class FireBall():
     def __init__(self, x, y, enemy, hurt):
-        # first 3 Frames are flying, last 4 frams are exploding
-        frame_rect = (0,0,14,14)
+        # 创建火球图形
+        frame_rect = (0, 0, 14, 14)
         self.image = tool.getImage(tool.GFX[c.FIREBALL], *frame_rect, c.BLACK, c.SIZE_MULTIPLIER)
         self.rect = self.image.get_rect()
+        # 设置火球的开始位置
         self.rect.centerx = x
         self.rect.centery = y
         self.enemy = enemy
         self.hurt = hurt
         self.done = False
+        # 计算火球的速度
         self.calVelocity()
     
     def calVelocity(self):
+        # 计算火球开始位置和敌方生物之间的距离，分为 x 轴和 y 轴距离
         dis_x = self.enemy.rect.centerx - self.rect.centerx
         dis_y = self.enemy.rect.centery - self.rect.centery
+        # 计算火球在 x 轴和 y 轴的速度 
         self.x_vel = dis_x / 50
         self.y_vel = dis_y / 50
 
     def update(self, level):
+        # 更新火球的位置
         self.rect.x += self.x_vel
         self.rect.y += self.y_vel
-        if abs(self.rect.centerx - self.enemy.rect.centerx) + abs(self.rect.centery - self.enemy.rect.centery) < 25:
+        # 计算火球中心位置和敌方生物中心位置的距离
+        distance = abs(self.rect.centerx - self.enemy.rect.centerx) + abs(self.rect.centery - self.enemy.rect.centery)
+        if distance < self.enemy.rect.width / 2:
+            # 距离小于敌方生物图形宽度的一半值时，认为火球和敌方生物发生了碰撞，产生伤害
             self.enemy.setHurt(self.hurt, level)
             self.done = True
     
     def draw(self, surface):
+        # 绘制火球图形
         surface.blit(self.image, self.rect)
 
 
@@ -63,7 +72,8 @@ class EntityAttr():
         elif self.attack < enemy_attr.defense:
             offset = (self.attack - enemy_attr.defense) * 0.025
         
-        damage = self.damage // 2 if damage_half else self.damage
+        # 如果 damage_half 为 True，生物的基础伤害减半
+        damage = self.damage / 2 if damage_half else self.damage
         # 计算出攻击伤害
         hurt = int(damage * (1 + offset))
         
@@ -148,16 +158,31 @@ class Entity():
         elif enemy is not None:
             # 保存敌方生物
             self.enemy = enemy
-            # 设置生物状态为行走状态
+            # 设置生物状态为攻击状态
             self.state = c.ATTACK
     
     def setRemoteTarget(self, enemy):
+        # 生物可以远程攻击时调用，保存敌方生物
         self.enemy = enemy
+        # 设置 remote_attack 为 True，表示将进行远程攻击
         self.remote_attack = True
+        # 设置生物状态为攻击状态
         self.state = c.ATTACK
     
-    def canRemoteAttack(self, enemy):
-        return self.attr.remote
+    def canRemoteAttack(self, map):
+        if self.attr.remote:
+            # 如果是远程生物，检查是否有敌方生物在可攻击的相邻格子
+            dir_list = tool.getAttackPositions(self.map_x, self.map_y)
+            for offset_x, offset_y in dir_list:
+                # 遍历生物所在地图格子的相邻八个格子
+                tmp_x, tmp_y = self.map_x + offset_x, self.map_y + offset_y                    
+                if self.isValid(tmp_x, tmp_y):
+                    entity = map.entity_map[tmp_x][tmp_y]
+                    if entity is not None and entity.group_id != self.group_id:
+                        # 如果有敌方生物在相邻格子，不能进行远程攻击
+                        return False
+            return True
+        return False
 
     def getNextPosition(self):
         # 获取下一个格子的坐标
