@@ -162,7 +162,7 @@ class Map():
                     # 遍历鼠标所在地图格子的相邻八个格子
                     tmp_x, tmp_y = map_x + offset_x, map_y + offset_y
                     if self.isValid(tmp_x, tmp_y):
-                        type = self.bg_map[tmp_x][tmp_y]
+                        type = self.bg_map[tmp_y][tmp_x]
                         if type == c.BG_RANGE or type == c.BG_ACTIVE:
                             # 如果这个格子是当前行动生物可以行动到的，添加到列表中
                             res_list.append((tmp_x, tmp_y))
