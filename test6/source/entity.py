@@ -176,7 +176,7 @@ class Entity():
             for offset_x, offset_y in dir_list:
                 # 遍历生物所在地图格子的相邻八个格子
                 tmp_x, tmp_y = self.map_x + offset_x, self.map_y + offset_y                    
-                if self.isValid(tmp_x, tmp_y):
+                if map.isValid(tmp_x, tmp_y):
                     entity = map.entity_map[tmp_y][tmp_x]
                     if entity is not None and entity.group_id != self.group_id:
                         # 如果有敌方生物在相邻格子，不能进行远程攻击
