@@ -81,13 +81,13 @@ class Level(tool.State):
         
         remove_list = []
         for hurt in self.hurt_group:
-            # 更新伤害显示图形坐标
+            # 更新伤害显示对象的图形坐标
             hurt.update()
             if hurt.shouldRemove():
-                # 如果伤害显示需要删除，添加到删除列表中
+                # 如果有伤害显示对象需要删除，添加到删除列表中
                 remove_list.append(hurt)
         for hurt in remove_list:
-            # 遍历删除列表，从伤害管理组中删除
+            # 遍历删除列表，从伤害显示管理组中删除
             self.hurt_group.remove(hurt)
             
         # 检查游戏状态
