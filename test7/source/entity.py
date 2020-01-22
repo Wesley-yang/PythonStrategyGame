@@ -6,31 +6,40 @@ from . import map
 
 class FireBall():
     def __init__(self, x, y, enemy, hurt):
-        # first 3 Frames are flying, last 4 frams are exploding
-        frame_rect = (0,0,14,14)
-        self.image = tool.getImage(tool.GFX[c.FIREBALL], *frame_rect, c.BLACK, c.SIZE_MULTIPLIER)
+        # 创建火球图形
+        frame_rect = (0, 0, 14, 14)
+        self.image = tool.getImage(tool.GFX[c.FIREBALL], *frame_rect, c.WHITE, c.SIZE_MULTIPLIER)
         self.rect = self.image.get_rect()
+        # 设置火球的开始坐标
         self.rect.centerx = x
         self.rect.centery = y
         self.enemy = enemy
         self.hurt = hurt
         self.done = False
+        # 计算火球的速度
         self.calVelocity()
     
     def calVelocity(self):
+        # 计算火球开始坐标和敌方生物中心坐标之间的距离，分为 x 轴和 y 轴距离
         dis_x = self.enemy.rect.centerx - self.rect.centerx
         dis_y = self.enemy.rect.centery - self.rect.centery
+        # 计算火球在 x 轴和 y 轴的速度，单位是像素
         self.x_vel = dis_x / 50
         self.y_vel = dis_y / 50
 
     def update(self, level):
+        # 更新火球的图形显示坐标
         self.rect.x += self.x_vel
         self.rect.y += self.y_vel
-        if abs(self.rect.centerx - self.enemy.rect.centerx) + abs(self.rect.centery - self.enemy.rect.centery) < 25:
+        # 计算火球中心坐标和敌方生物中心坐标的距离
+        distance = abs(self.rect.centerx - self.enemy.rect.centerx) + abs(self.rect.centery - self.enemy.rect.centery)
+        if distance < self.enemy.rect.width / 2:
+            # 距离小于敌方生物图形宽度的一半值时，认为火球和敌方生物发生了碰撞，产生伤害
             self.enemy.setHurt(self.hurt, level)
             self.done = True
     
     def draw(self, surface):
+        # 绘制火球图形
         surface.blit(self.image, self.rect)
 
 
@@ -63,7 +72,8 @@ class EntityAttr():
         elif self.attack < enemy_attr.defense:
             offset = (self.attack - enemy_attr.defense) * 0.025
         
-        damage = self.damage // 2 if damage_half else self.damage
+        # 如果 damage_half 为 True，生物的基础伤害减半
+        damage = self.damage / 2 if damage_half else self.damage
         # 计算出攻击伤害
         hurt = int(damage * (1 + offset))
         
@@ -148,16 +158,31 @@ class Entity():
         elif enemy is not None:
             # 保存敌方生物
             self.enemy = enemy
-            # 设置生物状态为行走状态
+            # 设置生物状态为攻击状态
             self.state = c.ATTACK
     
     def setRemoteTarget(self, enemy):
+        # 生物可以远程攻击时调用，保存敌方生物
         self.enemy = enemy
+        # 设置 remote_attack 为 True，表示将进行远程攻击
         self.remote_attack = True
+        # 设置生物状态为攻击状态
         self.state = c.ATTACK
     
-    def canRemoteAttack(self, enemy):
-        return self.attr.remote
+    def canRemoteAttack(self, map):
+        if self.attr.remote:
+            # 如果是远程生物，检查是否有敌方生物在可攻击的相邻格子
+            dir_list = tool.getAttackPositions(self.map_x, self.map_y)
+            for offset_x, offset_y in dir_list:
+                # 遍历生物所在地图格子的相邻八个格子
+                tmp_x, tmp_y = self.map_x + offset_x, self.map_y + offset_y                    
+                if map.isValid(tmp_x, tmp_y):
+                    entity = map.entity_map[tmp_y][tmp_x]
+                    if entity is not None and entity.group_id != self.group_id:
+                        # 如果有敌方生物在相邻格子，不能进行远程攻击
+                        return False
+            return True
+        return False
 
     def getNextPosition(self):
         # 获取下一个格子的坐标
@@ -217,7 +242,7 @@ class Entity():
     def setHurt(self, damage, level):
         # 当前生命值减去攻击伤害值
         self.health -= damage
-        
+        # 创建伤害值显示对象，并添加到运行类的伤害值显示管理组中
         level.addHurtShow(HurtShow(self.rect.centerx, self.rect.y, damage))
         
         if self.health <= 0:
@@ -227,7 +252,9 @@ class Entity():
             self.group.removeEntity(self)
 
     def shoot(self, enemy):
+        # 获取攻击伤害
         hurt = self.attr.getHurt(enemy.attr)
+        # 创建火球对象
         self.weapon = FireBall(*self.rect.center, self.enemy, hurt)
 
     def update(self, current_time, level):
@@ -263,13 +290,17 @@ class Entity():
             if self.attr.remote and self.remote_attack:
                 # 远程生物进行远程攻击
                 if self.weapon is None:
+                    # 如果远程武器 weapon 是 None，创建远程武器
                     self.shoot(self.enemy)
                 else:
+                    # 调用远程武器的更新函数
                     self.weapon.update(level)
                     if self.weapon.done:
+                        # 远程武器已经攻击到敌方生物，恢复默认设置
                         self.weapon = None
                         self.enemy = None
                         self.remote_attack = False
+                        # 设置生物状态为空闲状态
                         self.state = c.IDLE
             else:
                 if self.attack_timer == 0:
@@ -373,26 +404,38 @@ class EntityGroup():
 
 class HurtShow():
     def __init__(self, x, y, hurt):
+        # 保存伤害显示的开始 y 轴坐标
         self.y = y
+        # 创建伤害值的图形
         self.createHurtImage(hurt)
         self.rect = self.image.get_rect()
+        # 设置伤害值的开始坐标
         self.rect.centerx = x
         self.rect.bottom = y
+        # 设置伤害值图形向上方移动的速度为 1，单位是像素
         self.y_vel = -1
+        # 设置向上方移动的距离为 40，单位是像素
         self.distance = 40
 
     def createHurtImage(self, hurt):
+        # 创建字体
         font = pg.font.SysFont(None, 30)
+        # 创建伤害值图形，字体颜色为红色，背景颜色是白色
         self.image = font.render(str(hurt), True, c.RED, c.WHITE)
+        # 设置图形的透明颜色为白色，这样图形背景颜色在界面上显示时是透明的
         self.image.set_colorkey(c.WHITE)
 
     def shouldRemove(self):
+        # 判断是否要删除伤害值显示
         if (self.y - self.rect.y) > self.distance:
+            # 伤害值图形已经向上移动了指定的距离，可以删除
             return True
         return False
 
     def update(self):
+        # 根据 y 轴的速度更新伤害值图形显示的坐标
         self.rect.y += self.y_vel
 
     def draw(self, surface):
+        # 绘制伤害值图形
         surface.blit(self.image, self.rect)

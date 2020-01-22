@@ -47,7 +47,7 @@ def getAction(entity, map, enemy_group):
         hurt = entity.attr.getHurt(enemy.attr)
         enemyinfo.kill_time = (enemy.health-1) // hurt
         
-        #enemyinfo.remote = enemy.attr.remote
+        enemyinfo.remote = enemy.attr.remote
         info_list.append(enemyinfo)
     
     info_list = []

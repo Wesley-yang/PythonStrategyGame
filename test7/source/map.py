@@ -93,7 +93,7 @@ class Map():
         elif self.bg_map[map_y][map_x] == c.BG_ATTACK:
             # 如果格子类型是 c.BG_ATTACK，表示这个格子上是被攻击的敌方生物
             entity = self.entity_map[map_y][map_x]
-            if self.active_entity.canRemoteAttack(entity):
+            if self.active_entity.canRemoteAttack(self):
                 self.active_entity.setRemoteTarget(entity)
             else:
                 # self.select 保存了生物攻击前要行走到的目的位置
@@ -151,7 +151,7 @@ class Map():
             # 鼠标所在的地图格子上的生物就是当前行动的生物
             self.bg_map[map_y][map_x] = c.BG_SELECT
         elif entity.group_id != self.active_entity.group_id:
-            if self.active_entity.canRemoteAttack(entity):
+            if self.active_entity.canRemoteAttack(self):
                 self.bg_map[map_y][map_x] = c.BG_ATTACK
             else:
                 # 鼠标所在的地图格子上的生物是敌方生物
@@ -160,11 +160,12 @@ class Map():
                 res_list = []
                 for offset_x, offset_y in dir_list:
                     # 遍历鼠标所在地图格子的相邻八个格子
-                    if self.isValid(map_x + offset_x, map_y + offset_y):
-                        type = self.bg_map[map_y + offset_y][map_x + offset_x]
+                    tmp_x, tmp_y = map_x + offset_x, map_y + offset_y
+                    if self.isValid(tmp_x, tmp_y):
+                        type = self.bg_map[tmp_y][tmp_x]
                         if type == c.BG_RANGE or type == c.BG_ACTIVE:
                             # 如果这个格子是当前行动生物可以行动到的，添加到列表中
-                            res_list.append((map_x + offset_x, map_y + offset_y))
+                            res_list.append((tmp_x, tmp_y))
                 if len(res_list) > 0:
                     # 如果格子列表不为空，表示行走生物可以攻击到这个敌方生物。
                     min_dis = c.MAP_WIDTH
