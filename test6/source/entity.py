@@ -422,7 +422,7 @@ class HurtShow():
         font = pg.font.SysFont(None, 30)
         # 创建伤害值图形，字体颜色为红色，背景颜色是白色
         self.image = font.render(str(hurt), True, c.RED, c.WHITE)
-        # 设置图形的透明颜色为白色，这样图形显示效果就是透明的
+        # 设置图形的透明颜色为白色，这样图形背景颜色在界面上显示时是透明的
         self.image.set_colorkey(c.WHITE)
 
     def shouldRemove(self):
