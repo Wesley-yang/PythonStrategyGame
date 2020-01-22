@@ -43,7 +43,7 @@ class Level(tool.State):
         self.group2 = entity.EntityGroup(2)
         # 根据关卡地图配置文件中的生物组 2 配置，创建生物组 2 的生物
         self.group2.createEntity(self.map_data[c.GROUP2], self.map)
-        
+        # 创建伤害显示的管理组列表
         self.hurt_group = []
 
     def update(self, surface, current_time, mouse_pos):
@@ -81,10 +81,13 @@ class Level(tool.State):
         
         remove_list = []
         for hurt in self.hurt_group:
+            # 更新伤害显示图形坐标
             hurt.update()
             if hurt.shouldRemove():
+                # 如果伤害显示需要删除，添加到删除列表中
                 remove_list.append(hurt)
         for hurt in remove_list:
+            # 遍历删除列表，从伤害管理组中删除
             self.hurt_group.remove(hurt)
             
         # 检查游戏状态
@@ -145,5 +148,6 @@ class Level(tool.State):
         self.group2.draw(surface)
         
         for hurt in self.hurt_group:
+            # 绘制伤害显示图形
             hurt.draw(surface)
         
