@@ -154,11 +154,12 @@ class Map():
             res_list = []
             for offset_x, offset_y in dir_list:
                 # 遍历鼠标所在地图格子的相邻八个格子
-                if self.isValid(map_x + offset_x, map_y + offset_y):
-                    type = self.bg_map[map_y + offset_y][map_x + offset_x]
+                tmp_x, tmp_y = map_x + offset_x, map_y + offset_y
+                if self.isValid(tmp_x, tmp_y):
+                    type = self.bg_map[tmp_y][tmp_x]
                     if type == c.BG_RANGE or type == c.BG_ACTIVE:
                         # 如果这个格子是当前行动生物可以行动到的，添加到列表中
-                        res_list.append((map_x + offset_x, map_y + offset_y))
+                        res_list.append((tmp_x, tmp_y))
             if len(res_list) > 0:
                 # 如果格子列表不为空，表示行走生物可以攻击到这个敌方生物。
                 min_dis = c.MAP_WIDTH
