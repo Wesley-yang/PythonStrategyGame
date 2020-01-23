@@ -28,14 +28,14 @@ def getAction(entity, map, enemy_group):
         for offset_x, offset_y in dir_list:
             x, y = enemy.map_x + offset_x, enemy.map_y + offset_y
             if map.isValid(x, y) and map.isMovable(x, y):
-                distance = aStarSearch.getAStarDistance(map, (entity.map_x, entity.map_y), (x, y))
+                distance = AStarSearch.getAStarDistance(map, (entity.map_x, entity.map_y), (x, y))
                 if distance is None:
                     continue
                 if best_pos is None:
-                    best_pos = (x, y, distance)
+                    best_pos = (x, y)
                     min_dis =  distance
                 elif distance < min_dis:
-                    best_pos = (x, y, distance)
+                    best_pos = (x, y)
                     min_dis =  distance
         return best_pos
     
@@ -45,18 +45,17 @@ def getAction(entity, map, enemy_group):
         # 遍历敌方生物组中每一个生物，检查生物的地图位置
         if tool.isNextToEntity(entity, enemy):
             # 如果敌方生物在相邻的地图格子，不用移动就可以攻击到
-            location = (entity.map_x, entity.map_y)
-            distance = 0          
+            destination = (entity.map_x, entity.map_y)       
         else:
-            # 否则找到敌方生物的相邻地图格子行走路径距离最近的格子
-            result = getDestination(entity, map, enemy)
-            if result is None:
-                continue
-            location = (result[0], result[1])
-            distance = result[2]
+            # 否则找到敌方生物的相邻地图格子行走路径距离最近的格子位置
+            destination = getDestination(entity, map, enemy)
        
+        # 获取路径对象 location 和路径距离 distance
+        location = AStarSearch.AStarSearch(map, (entity.map_x, entity.map_y), destination)
+        _, _, distance = AStarSearch.getFirstStepAndDistance(location)
         # 创建 EnemyInfo 类对象
         enemyinfo = EnemyInfo(entity, enemy, location, distance)
+        # 添加到敌方生物信息列表
         info_list.append(enemyinfo)
 
     # 遍历可以攻击到的敌方生物信息列表，按照设定的策略选择最佳的敌方生物
