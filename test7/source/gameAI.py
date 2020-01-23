@@ -1,5 +1,3 @@
-__author__ = 'marble_xu'
-
 from . import map
 from . import tool, aStarSearch
 
