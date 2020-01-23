@@ -28,7 +28,7 @@ def getAction(entity, map, enemy_group):
         for offset_x, offset_y in dir_list:
             x, y = enemy.map_x + offset_x, enemy.map_y + offset_y
             if map.isValid(x, y) and map.isMovable(x, y):
-                distance = AStarSearch.getAStarDistance(map, (entity.map_x, entity.map_y), (x, y))
+                distance = aStarSearch.getAStarDistance(map, (entity.map_x, entity.map_y), (x, y))
                 if distance is None:
                     continue
                 if best_pos is None:
@@ -51,8 +51,8 @@ def getAction(entity, map, enemy_group):
             destination = getDestination(entity, map, enemy)
        
         # 获取路径对象 location 和路径距离 distance
-        location = AStarSearch.AStarSearch(map, (entity.map_x, entity.map_y), destination)
-        _, _, distance = AStarSearch.getFirstStepAndDistance(location)
+        location = aStarSearch.AStarSearch(map, (entity.map_x, entity.map_y), destination)
+        _, _, distance = aStarSearch.getFirstStepAndDistance(location)
         # 创建 EnemyInfo 类对象
         enemyinfo = EnemyInfo(entity, enemy, location, distance)
         # 添加到敌方生物信息列表
