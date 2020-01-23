@@ -67,6 +67,7 @@ class Level(tool.State):
                 self.group2.nextTurn()
         elif self.state == c.SELECT:
             if self.map.active_entity.group_id == 1:
+                # 如果行动生物属于生物组 1，调用 getAction 函数获取行动选择
                 (map_x, map_y, enemy) = gameAI.getAction(self.map.active_entity, self.map, self.group2.group)
                 self.map.active_entity.setDestination(self.map, map_x, map_y, enemy)
                 self.state = c.ENTITY_ACT
