@@ -8,9 +8,9 @@ class EnemyInfo():
         # 保存敌方生物
         self.enemy = enemy
         # 保存目的位置
-        enemyinfo.location = location
+        self.location = location
         # 保存到目的位置的路径距离
-        enemyinfo.distance = distance
+        self.distance = distance
         # 要经过几轮行动攻击到敌方生物
         if distance == 0:
             self.round_num = 0
@@ -99,7 +99,7 @@ def getAction(entity, map, enemy_group):
         x, y = aStarSearch.getPosInRange(best_info.location, range)
         return (x, y, None)
     else:
-        # 至少二轮行动，才能攻击到敌方生物时，本轮行走最大的距离
+        # 至少二轮行动才能攻击到敌方生物时，本轮行走最大的距离
         range = best_info.distance - entity.attr.distance
         x, y = aStarSearch.getPosInRange(best_info.location, range)
         return (x, y, None)
