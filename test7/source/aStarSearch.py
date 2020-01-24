@@ -158,14 +158,14 @@ def getPath(map, source, dest):
         path = path[::-1]
     return path
 
-def getPosInRange(location, range):
-    '''get the position which distance from it to destination is range '''
+def getPosByDistance(location, distance):
+    # 从路径的目的位置往前指定的距离 distance，返回得到的地图位置
     tmp = location
     while location.pre_entry is not None:
-        if range == 0:
+        if distance == 0:
             break
         location = location.pre_entry
         tmp = location
-        range -= 1
+        distance -= 1
         
     return (tmp.x, tmp.y)

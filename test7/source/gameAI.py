@@ -92,11 +92,11 @@ def getAction(entity, map, enemy_group):
         return (best_info.location.x, best_info.location.y, best_info.enemy)
     elif best_info.round_num == 1:
         # 下一轮行动可以攻击到，本轮行走的距离，正好使下一轮能攻击到敌方生物
-        range = entity.attr.distance
-        x, y = aStarSearch.getPosInRange(best_info.location, range)
+        distance = entity.attr.distance
+        x, y = aStarSearch.getPosByDistance(best_info.location, distance)
         return (x, y, None)
     else:
         # 至少二轮行动才能攻击到敌方生物时，本轮行走最大的距离
-        range = best_info.distance - entity.attr.distance
-        x, y = aStarSearch.getPosInRange(best_info.location, range)
+        distance = best_info.distance - entity.attr.distance
+        x, y = aStarSearch.getPosByDistance(best_info.location, distance)
         return (x, y, None)
