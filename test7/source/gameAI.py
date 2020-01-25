@@ -2,7 +2,7 @@ from . import map
 from . import tool, aStarSearch
 
 class EnemyInfo():
-    def __init__(self, entity, enemy, location, distance):
+    def __init__(self, entity, enemy, location, distance, damage_half):
         # 保存敌方生物
         self.enemy = enemy
         # 保存目的位置
@@ -15,7 +15,7 @@ class EnemyInfo():
         else:
             self.round_num = (distance - 1) // entity.attr.distance
         # 敌方生物要攻击几次才会死亡
-        hurt = entity.attr.getHurt(enemy.attr)
+        hurt = entity.attr.getHurt(enemy.attr, damage_half)
         self.kill_time = (enemy.health-1) // hurt       
         # 敌方生物是否是远程生物
         self.remote = enemy.attr.remote
@@ -70,9 +70,15 @@ def getAction(entity, map, enemy_group):
             # 获取路径对象 location 和路径距离 distance
             location = aStarSearch.AStarSearch(map, (entity.map_x, entity.map_y), destination)
             _, _, distance = aStarSearch.getFirstStepAndDistance(location)
-
+        
+        # 判断基础伤害是否要减半
+        if entity.attr.remote and not remote_attack:
+            # 如果是远程生物且进行近战攻击，基础伤害减半
+            damage_half = True
+        else:
+            damage_half = False
         # 创建 EnemyInfo 类对象
-        enemyinfo = EnemyInfo(entity, enemy, location, distance)
+        enemyinfo = EnemyInfo(entity, enemy, location, distance, damage_half)
         # 添加到敌方生物信息列表
         info_list.append(enemyinfo)
 
