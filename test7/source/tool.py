@@ -164,6 +164,7 @@ def getAttackPositions(x, y):
     return [(-1,-1), (-1,0), (-1,1), (0,-1), (0,1), (1,-1),(1,0), (1,1)]
 
 def isNextToEntity(entity1, entity2):
+    # 判断两个生物是否在相邻可攻击的地图位置
     if abs(entity1.map_x - entity2.map_x) <= 1 and abs(entity1.map_y - entity2.map_y) <= 1:
         return True
     return False
