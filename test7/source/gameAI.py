@@ -43,7 +43,9 @@ def getAction(entity, map, enemy_group):
                     min_dis =  distance
         return best_pos
     
+    # 创建敌方生物信息列表
     info_list = []
+    # 保存最佳的敌方生物
     best_info = None
     for enemy in enemy_group:
         # 遍历敌方生物组中每一个生物，检查生物的地图位置
