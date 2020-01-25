@@ -22,19 +22,23 @@ class EnemyInfo():
          
 def getAction(entity, map, enemy_group):
     def getDestination(entity, map, enemy):
+        # 获取敌方生物相邻的可攻击地图位置中和行动生物距离最近的地图位置
         dir_list = tool.getAttackPositions(enemy.map_x, enemy.map_y)
         best_pos = None
         min_dis = 0
         for offset_x, offset_y in dir_list:
             x, y = enemy.map_x + offset_x, enemy.map_y + offset_y
             if map.isValid(x, y) and map.isMovable(x, y):
+                # 这个相邻地图位置是有效且可移动，获取和行动生物的路径距离
                 distance = aStarSearch.getAStarDistance(map, (entity.map_x, entity.map_y), (x, y))
                 if distance is None:
+                    # distance 为 None，表示这个相邻位置不可到达
                     continue
                 if best_pos is None:
                     best_pos = (x, y)
                     min_dis =  distance
                 elif distance < min_dis:
+                    # 保存路径距离最近的相邻地图位置
                     best_pos = (x, y)
                     min_dis =  distance
         return best_pos
