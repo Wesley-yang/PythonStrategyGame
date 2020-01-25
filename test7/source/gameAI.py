@@ -47,22 +47,30 @@ def getAction(entity, map, enemy_group):
     info_list = []
     # 保存最佳的敌方生物
     best_info = None
+    # 行动生物是否可以进行远程攻击
+    remote_attack = entity.canRemoteAttack(map)
+    
     # 遍历敌方生物组中每一个生物，检查生物的地图位置
     for enemy in enemy_group:
-        if tool.isNextToEntity(entity, enemy):
-            # 如果敌方生物在相邻的地图格子，不用移动就可以攻击到
-            destination = (entity.map_x, entity.map_y)       
+        if remote_attack:
+            location = None
+            distance = 0
         else:
-            # 否则找到敌方生物的相邻地图格子中和行动生物距离最近的格子位置
-            destination = getDestination(entity, map, enemy)
-        
-        if destination is None:
-            # 表示不能行走到这个敌方生物的相邻可攻击的地图位置
-            continue
+            if tool.isNextToEntity(entity, enemy):
+                # 如果敌方生物在相邻的地图格子，不用移动就可以攻击到
+                destination = (entity.map_x, entity.map_y)       
+            else:
+                # 否则找到敌方生物的相邻地图格子中和行动生物距离最近的格子位置
+                destination = getDestination(entity, map, enemy)
+            
+            if destination is None:
+                # 表示不能行走到这个敌方生物的相邻可攻击的地图位置
+                continue
 
-        # 获取路径对象 location 和路径距离 distance
-        location = aStarSearch.AStarSearch(map, (entity.map_x, entity.map_y), destination)
-        _, _, distance = aStarSearch.getFirstStepAndDistance(location)
+            # 获取路径对象 location 和路径距离 distance
+            location = aStarSearch.AStarSearch(map, (entity.map_x, entity.map_y), destination)
+            _, _, distance = aStarSearch.getFirstStepAndDistance(location)
+
         # 创建 EnemyInfo 类对象
         enemyinfo = EnemyInfo(entity, enemy, location, distance)
         # 添加到敌方生物信息列表
@@ -100,14 +108,18 @@ def getAction(entity, map, enemy_group):
     # 根据最佳敌方生物的行动轮数，选择行动策略
     if best_info.round_num == 0:
         # 本轮行动可以攻击到，返回目的位置
-        return (best_info.location.x, best_info.location.y, best_info.enemy)
+        if best_info.location is None:
+            # 目的位置为 None, 表示行动生物进行远程攻击
+            return (None, best_info.enemy)
+        else:
+            return ((best_info.location.x, best_info.location.y), best_info.enemy)
     elif best_info.round_num == 1:
         # 下一轮行动可以攻击到，本轮行走的距离，正好使下一轮能攻击到敌方生物
         distance = entity.attr.distance
         x, y = aStarSearch.getPosByDistance(best_info.location, distance)
-        return (x, y, None)
+        return ((x, y), None)
     else:
         # 至少二轮行动才能攻击到敌方生物时，本轮行走最大的距离
         distance = best_info.distance - entity.attr.distance
         x, y = aStarSearch.getPosByDistance(best_info.location, distance)
-        return (x, y, None)
+        return ((x, y), None)

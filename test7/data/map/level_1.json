@@ -6,7 +6,7 @@
     ],
     "group1":[
         {"name":"devil", "x": 1, "y": 0},
-        {"name":"devil", "x": 4, "y": 0},
+        {"name":"evilwizard", "x": 4, "y": 1},
         {"name":"devil", "x": 7, "y": 0}
     ],
     "group2":[

@@ -26,5 +26,15 @@
         "remote":1,
         "speed":4,
         "remote":1
+    },
+    "evilwizard":{
+        "health":100,
+        "distance":5,
+        "damage":40,
+        "attack":10,
+        "defense":2,
+        "remote":1,
+        "speed":4,
+        "remote":1
     }
 }

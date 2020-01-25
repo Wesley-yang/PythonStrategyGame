@@ -68,8 +68,13 @@ class Level(tool.State):
         elif self.state == c.SELECT:
             if self.map.active_entity.group_id == 1:
                 # 如果行动生物属于生物组 1，调用 getAction 函数获取行动选择
-                (map_x, map_y, enemy) = gameAI.getAction(self.map.active_entity, self.map, self.group2.group)
-                self.map.active_entity.setDestination(self.map, map_x, map_y, enemy)
+                pos, enemy = gameAI.getAction(self.map.active_entity, self.map, self.group2.group)
+                if pos is None:
+                    # 目的位置为 None, 表示行动生物进行远程攻击
+                    self.map.active_entity.setRemoteTarget(enemy)
+                else:
+                    # 目的位置不为 None, 表示行动生物进行近战攻击
+                    self.map.active_entity.setDestination(self.map, pos[0], pos[1], enemy)
                 self.state = c.ENTITY_ACT
             else:
                 self.map.updateMapShow(pg.mouse.get_pos())
