@@ -53,11 +53,11 @@ def getAction(entity, map, enemy_group):
             # 如果敌方生物在相邻的地图格子，不用移动就可以攻击到
             destination = (entity.map_x, entity.map_y)       
         else:
-            # 否则找到敌方生物的相邻地图格子行走路径距离最近的格子位置
+            # 否则找到敌方生物的相邻地图格子中和行动生物距离最近的格子位置
             destination = getDestination(entity, map, enemy)
         
         if destination is None:
-            # 表示不能攻击到这个敌方生物
+            # 表示不能行走到这个敌方生物的相邻可攻击的地图位置
             continue
 
         # 获取路径对象 location 和路径距离 distance
