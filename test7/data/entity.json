@@ -1,7 +1,7 @@
 {
     "devil":{
         "health":100,
-        "distance":5,
+        "distance":6,
         "damage":40,
         "attack":5,
         "defense":5,
@@ -19,7 +19,7 @@
     },
     "magician":{
         "health":70,
-        "distance":4,
+        "distance":5,
         "damage":60,
         "attack":10,
         "defense":2,
