@@ -73,7 +73,7 @@ class Level(tool.State):
                     # 目的位置为 None, 表示行动生物进行远程攻击
                     self.map.active_entity.setRemoteTarget(enemy)
                 else:
-                    # 目的位置不为 None, 表示行动生物进行近战攻击
+                    # 目的位置不为 None, 表示行动生物进行行走或近战攻击
                     self.map.active_entity.setDestination(self.map, pos[0], pos[1], enemy)
                 self.state = c.ENTITY_ACT
             else:

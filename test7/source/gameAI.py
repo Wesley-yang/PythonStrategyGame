@@ -113,11 +113,12 @@ def getAction(entity, map, enemy_group):
     
     # 根据最佳敌方生物的行动轮数，选择行动策略
     if best_info.round_num == 0:
-        # 本轮行动可以攻击到，返回目的位置
+        # 本轮行动可以攻击到
         if best_info.location is None:
             # 目的位置为 None, 表示行动生物进行远程攻击
             return (None, best_info.enemy)
         else:
+            # 目的位置不为 None, 表示行动生物进行近战攻击
             return ((best_info.location.x, best_info.location.y), best_info.enemy)
     elif best_info.round_num == 1:
         # 下一轮行动可以攻击到，本轮行走的距离，正好使下一轮能攻击到敌方生物
