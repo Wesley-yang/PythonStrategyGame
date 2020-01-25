@@ -47,8 +47,8 @@ def getAction(entity, map, enemy_group):
     info_list = []
     # 保存最佳的敌方生物
     best_info = None
+    # 遍历敌方生物组中每一个生物，检查生物的地图位置
     for enemy in enemy_group:
-        # 遍历敌方生物组中每一个生物，检查生物的地图位置
         if tool.isNextToEntity(entity, enemy):
             # 如果敌方生物在相邻的地图格子，不用移动就可以攻击到
             destination = (entity.map_x, entity.map_y)       
@@ -93,6 +93,7 @@ def getAction(entity, map, enemy_group):
                         # 优先选择距离更近的敌方生物
                         best_info = info
     
+    # 根据最佳敌方生物的行动轮数，选择行动策略
     if best_info.round_num == 0:
         # 本轮行动可以攻击到，返回目的位置
         return (best_info.location.x, best_info.location.y, best_info.enemy)
