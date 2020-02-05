@@ -24,8 +24,14 @@ class FireBall():
         dis_x = self.enemy.rect.centerx - self.rect.centerx
         dis_y = self.enemy.rect.centery - self.rect.centery
         # 计算火球在 x 轴和 y 轴的速度，单位是像素
-        self.x_vel = dis_x / 50
-        self.y_vel = dis_y / 50
+        if c.MAP_HEXAGON:
+            num = 24
+        else:
+            num = 50
+        self.x_vel = dis_x / num
+        self.y_vel = dis_y / num
+        print('entity[%d, %d] enemy[%d, %d], vel[%f, %f]' % (self.rect.centerx,self.rect.centery,
+                self.enemy.rect.centerx, self.enemy.rect.centery, self.x_vel, self.y_vel))
 
     def update(self, level):
         # 更新火球的图形显示坐标
@@ -117,7 +123,7 @@ class Entity():
         # 记录游戏当前时间
         self.current_time = 0.0
         # 生物行走时的速度
-        self.move_speed = 2
+        self.move_speed = 1
         # 生物到目的位置的行走路径
         self.walk_path = None
         
@@ -139,7 +145,11 @@ class Entity():
 
     def getRectPos(self, map_x, map_y):
         '''返回在地图格子中显示生物图形的坐标'''
-        return(map_x * c.REC_SIZE + c.REC_SIZE // 2, map_y * c.REC_SIZE + c.REC_SIZE // 2 + 3)
+        if c.MAP_HEXAGON:
+            base_x, base_y = tool.getHexMapPos(map_x, map_y)
+            return (base_x + c.HEX_X_SIZE // 2, base_y + c.HEX_Y_SIZE // 2)
+        else:
+            return(map_x * c.REC_SIZE + c.REC_SIZE // 2, map_y * c.REC_SIZE + c.REC_SIZE // 2 + 3)
         
     def setDestination(self, map, map_x, map_y, enemy=None):
         # 获取到目的位置的行走路径
@@ -217,7 +227,7 @@ class Entity():
                 if self.rect.centerx < self.next_x:
                     # 如果小于下一个格子的 x 轴值，修正下
                     self.rect.centerx = self.next_x
-        elif self.rect.centery != self.next_y:
+        if self.rect.centery != self.next_y:
             if self.rect.centery < self.next_y:
                 # 向 y 轴下方移动
                 self.rect.centery += self.move_speed

@@ -5,9 +5,19 @@ ORIGINAL_CAPTION = 'Turn Base Strategy Game'
 
 GRID_X_LEN = 10 # 地图的行数
 GRID_Y_LEN = 12 # 地图的列数
-REC_SIZE = 50   # 地图每个格子的长度
-MAP_WIDTH = GRID_X_LEN * REC_SIZE  # 地图的宽度
-MAP_HEIGHT = GRID_Y_LEN * REC_SIZE # 地图的高度
+
+MAP_HEXAGON = True
+
+if MAP_HEXAGON:
+    REC_SIZE = 56
+    HEX_Y_SIZE = 56
+    HEX_X_SIZE = 48
+    MAP_WIDTH = GRID_X_LEN * HEX_X_SIZE + 1
+    MAP_HEIGHT = GRID_Y_LEN//2 * (HEX_Y_SIZE//2) * 3 + HEX_Y_SIZE//4
+else:
+    REC_SIZE = 50   # 地图每个格子的长度
+    MAP_WIDTH = GRID_X_LEN * REC_SIZE  # 地图的宽度
+    MAP_HEIGHT = GRID_Y_LEN * REC_SIZE # 地图的高度
 
 SCREEN_WIDTH = MAP_WIDTH   # 游戏界面的宽度
 SCREEN_HEIGHT = MAP_HEIGHT # 游戏界面的高度

@@ -36,21 +36,35 @@ class Map():
             for x in range(self.width):
                 type = self.grid_map[y][x]
                 if type != c.MAP_EMPTY:
-                    # (x * c.REC_SIZE, y * c.REC_SIZE)表示格子在地图上的坐标
-                    self.map_image.blit(tool.GRID[type], (x * c.REC_SIZE, y * c.REC_SIZE))
+                    if c.MAP_HEXAGON:
+                        base_x, base_y = tool.getHexMapPos(x, y)
+                        self.map_image.blit(tool.GRID[type], (base_x, base_y))
+                    else:
+                        # (x * c.REC_SIZE, y * c.REC_SIZE)表示格子在地图上的坐标
+                        self.map_image.blit(tool.GRID[type], (x * c.REC_SIZE, y * c.REC_SIZE))
         # pygame.Surface 创建的Surface对象的默认颜色是黑色，设置透明色为黑色后，图像上黑色的部分显示时变成透明
         self.map_image.set_colorkey(c.BLACK)
 
     def isValid(self, map_x, map_y):
         '''判断传入的地图x和y的值是否是有效的'''
-        if (map_x < 0 or map_x >= self.width or
+        if c.MAP_HEXAGON:
+            if map_y % 2 == 0:
+                max_x = self.width
+            else:
+                max_x = self.width - 1
+        else:
+            max_x = self.width
+        if (map_x < 0 or map_x >= max_x or
             map_y < 0 or map_y >= self.height):
             return False
         return True
 
     def getMapIndex(self, x, y):
         '''根据传入的坐标x和y值，返回坐标所在的格子位置'''
-        return (x//c.REC_SIZE, y//c.REC_SIZE)
+        if c.MAP_HEXAGON:
+            return tool.getHexMapIndex(x, y)
+        else:
+            return (x//c.REC_SIZE, y//c.REC_SIZE)
 
     def isMovable(self, map_x, map_y):
         '''判断是否能移动到传入的地图格子位置'''
@@ -62,15 +76,21 @@ class Map():
         return abs(x1 - x2) + abs(y1 - y2)
     
     def getDistance(self, x1, y1, map_x2, map_y2):
-        # 计算坐标（x1，y2）和 地图格子（map_x2, map_y2) 的中心位置之间的距离
-        map_x1, map_y1 = self.getMapIndex(x1, y1)
-        x2 = map_x2 * c.REC_SIZE + c.REC_SIZE//2
-        y2 = map_y2 * c.REC_SIZE + c.REC_SIZE//2
-        # 距离计算采用最简单的方式，计算 x 轴和 y 轴差值的和
-        distance = (abs(x1 - x2) + abs(y1 - y2))
-        if map_x1 != map_x2 and map_y1 != map_y2:
-            # 如果是对角线上的相邻位置，距离计算会偏大，要减去一个值
-            distance -= c.REC_SIZE//2
+        if c.MAP_HEXAGON:
+            x2, y2 = tool.getHexMapPos(map_x2, map_y2)
+            x2 += c.HEX_X_SIZE // 2
+            y2 += c.HEX_Y_SIZE // 2
+            distance = (abs(x1 - x2) + abs(y1 - y2))
+        else:
+            # 计算坐标（x1，y2）和 地图格子（map_x2, map_y2) 的中心位置之间的距离
+            map_x1, map_y1 = self.getMapIndex(x1, y1)
+            x2 = map_x2 * c.REC_SIZE + c.REC_SIZE//2
+            y2 = map_y2 * c.REC_SIZE + c.REC_SIZE//2
+            # 距离计算采用最简单的方式，计算 x 轴和 y 轴差值的和
+            distance = (abs(x1 - x2) + abs(y1 - y2))
+            if map_x1 != map_x2 and map_y1 != map_y2:
+                # 如果是对角线上的相邻位置，距离计算会偏大，要减去一个值
+                distance -= c.REC_SIZE//2
         return distance
     
     def isInRange(self, source_x, source_y, dest_x, dest_y, max_distance):
@@ -197,6 +217,12 @@ class Map():
         self.entity_map[map_y][map_x] = value
 
     def drawBackground(self, surface):
+        if c.MAP_HEXAGON:
+            return self.drawBackgroundHex(surface)
+        else:
+            return self.drawBackgroundSquare(surface)
+
+    def drawBackgroundSquare(self, surface):
         # 根据背景格子类型，设置地图格子为不同的颜色
         for y in range(self.height):
             for x in range(self.width):
@@ -230,3 +256,45 @@ class Map():
             start_pos = (c.REC_SIZE * x, 0) 
             end_pos = (c.REC_SIZE * x, c.MAP_HEIGHT)
             pg.draw.line(surface, c.BLACK, start_pos, end_pos, 1)
+
+    def drawBackgroundHex(self, surface):
+        Y_LEN = c.HEX_Y_SIZE // 2
+        X_LEN = c.HEX_X_SIZE // 2
+
+        pg.draw.rect(surface, c.LIGHTYELLOW, pg.Rect(0, 0, c.MAP_WIDTH, c.MAP_HEIGHT))
+
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.bg_map[y][x] == c.BG_EMPTY:
+                    color = c.LIGHTYELLOW
+                elif self.bg_map[y][x] == c.BG_ACTIVE:
+                    color = c.SKY_BLUE
+                elif self.bg_map[y][x] == c.BG_RANGE:
+                    color = c.NAVYBLUE
+                elif self.bg_map[y][x] == c.BG_SELECT:
+                    color = c.GREEN
+                elif self.bg_map[y][x] == c.BG_ATTACK:
+                    color = c.GOLD
+
+                base_x, base_y = tool.getHexMapPos(x, y)
+                points = [(base_x, base_y + Y_LEN//2 + Y_LEN), (base_x, base_y + Y_LEN//2),
+                          (base_x + X_LEN, base_y), (base_x + X_LEN * 2, base_y + Y_LEN//2),
+                          (base_x + X_LEN * 2, base_y + Y_LEN//2 + Y_LEN), (base_x + X_LEN, base_y + Y_LEN*2)]
+                pg.draw.polygon(surface, color, points)
+
+        surface.blit(self.map_image, self.rect)
+
+        for y in range(self.height):
+            for x in range(self.width):
+                if y % 2 == 0:
+                    base_x = X_LEN * 2 * x
+                    base_y = Y_LEN * 3 * (y//2)
+                else:
+                    if x == self.width - 1:
+                        continue
+                    base_x = X_LEN * 2 * x + X_LEN
+                    base_y = Y_LEN * 3 * (y//2) + Y_LEN//2 + Y_LEN
+                points = [(base_x, base_y + Y_LEN//2 + Y_LEN), (base_x, base_y + Y_LEN//2),
+                          (base_x + X_LEN, base_y), (base_x + X_LEN * 2, base_y + Y_LEN//2),
+                          (base_x + X_LEN * 2, base_y + Y_LEN//2 + Y_LEN), (base_x + X_LEN, base_y + Y_LEN*2)]
+                pg.draw.lines(surface, c.BLACK, True, points)
