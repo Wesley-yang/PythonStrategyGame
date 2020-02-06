@@ -364,8 +364,8 @@ class EntityGroup():
         # 一个生物死亡时，从生物组中删除，并更新生物列表中的索引值
         for i in range(len(self.group)):
             if self.group[i] == entity:
-                if (self.entity_index > i or
-                    (self.entity_index >= len(self.group) - 1)):
+                if self.entity_index > i:
+                    # 更新下一个行动生物的 index 
                     self.entity_index -= 1
         self.group.remove(entity)
     

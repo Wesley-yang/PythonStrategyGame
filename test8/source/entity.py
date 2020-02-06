@@ -25,13 +25,11 @@ class FireBall():
         dis_y = self.enemy.rect.centery - self.rect.centery
         # 计算火球在 x 轴和 y 轴的速度，单位是像素
         if c.MAP_HEXAGON:
-            num = 24
+            num = c.HEX_X_SIZE // 2
         else:
-            num = 50
+            num = c.REC_SIZE
         self.x_vel = dis_x / num
         self.y_vel = dis_y / num
-        print('entity[%d, %d] enemy[%d, %d], vel[%f, %f]' % (self.rect.centerx,self.rect.centery,
-                self.enemy.rect.centerx, self.enemy.rect.centery, self.x_vel, self.y_vel))
 
     def update(self, level):
         # 更新火球的图形显示坐标
@@ -374,8 +372,8 @@ class EntityGroup():
         # 一个生物死亡时，从生物组中删除，并更新生物列表中的索引值
         for i in range(len(self.group)):
             if self.group[i] == entity:
-                if (self.entity_index > i or
-                    (self.entity_index >= len(self.group) - 1)):
+                if self.entity_index > i:
+                    # 更新下一个行动生物的 index
                     self.entity_index -= 1
         self.group.remove(entity)
     

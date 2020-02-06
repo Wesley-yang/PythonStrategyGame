@@ -28,7 +28,7 @@ class Map():
                 self.grid_map[y][x] = type
         
         # 创建一个和地图一样大小的图片map_image，用来绘制非空的地图格子，比如格子是石块或草地。
-        self.map_image = pg.Surface((self.width * c.REC_SIZE, self.height * c.REC_SIZE)).convert()
+        self.map_image = pg.Surface((c.MAP_WIDTH, c.MAP_WIDTH)).convert()
         self.rect = self.map_image.get_rect()
         self.rect.x = 0
         self.rect.y = 0
@@ -73,7 +73,17 @@ class Map():
 
     def calHeuristicDistance(self, x1, y1, x2, y2):
         '''估计地图两个格点之间的距离'''
-        return abs(x1 - x2) + abs(y1 - y2)
+        if c.MAP_HEXAGON:
+            dis_y = abs(y1 - y2)
+            dis_x = abs(x1 - x2)
+            half_y = dis_y // 2
+            if dis_y >= dis_x:
+                dis_x = 0
+            else:
+                dis_x -= half_y
+            return (dis_y + dis_x)
+        else:
+            return abs(x1 - x2) + abs(y1 - y2)
     
     def getDistance(self, x1, y1, map_x2, map_y2):
         if c.MAP_HEXAGON:
@@ -277,6 +287,7 @@ class Map():
                     color = c.GOLD
 
                 base_x, base_y = tool.getHexMapPos(x, y)
+                # 六边形格子的六个顶点坐标
                 points = [(base_x, base_y + Y_LEN//2 + Y_LEN), (base_x, base_y + Y_LEN//2),
                           (base_x + X_LEN, base_y), (base_x + X_LEN * 2, base_y + Y_LEN//2),
                           (base_x + X_LEN * 2, base_y + Y_LEN//2 + Y_LEN), (base_x + X_LEN, base_y + Y_LEN*2)]
@@ -294,6 +305,7 @@ class Map():
                         continue
                     base_x = X_LEN * 2 * x + X_LEN
                     base_y = Y_LEN * 3 * (y//2) + Y_LEN//2 + Y_LEN
+                # 六边形格子的六个顶点坐标
                 points = [(base_x, base_y + Y_LEN//2 + Y_LEN), (base_x, base_y + Y_LEN//2),
                           (base_x + X_LEN, base_y), (base_x + X_LEN * 2, base_y + Y_LEN//2),
                           (base_x + X_LEN * 2, base_y + Y_LEN//2 + Y_LEN), (base_x + X_LEN, base_y + Y_LEN*2)]

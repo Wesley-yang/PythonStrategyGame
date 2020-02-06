@@ -9,10 +9,10 @@ GRID_Y_LEN = 12 # 地图的列数
 MAP_HEXAGON = True
 
 if MAP_HEXAGON:
-    REC_SIZE = 56
-    HEX_Y_SIZE = 56
-    HEX_X_SIZE = 48
-    MAP_WIDTH = GRID_X_LEN * HEX_X_SIZE + 1
+    HEX_Y_SIZE = 56 # 每个格子 Y 轴的高度
+    HEX_X_SIZE = 48 # 每个格子 X 轴的宽度
+    MAP_WIDTH = GRID_X_LEN * HEX_X_SIZE + 1 # 地图的宽度
+    # 地图的高度
     MAP_HEIGHT = GRID_Y_LEN//2 * (HEX_Y_SIZE//2) * 3 + HEX_Y_SIZE//4
 else:
     REC_SIZE = 50   # 地图每个格子的长度

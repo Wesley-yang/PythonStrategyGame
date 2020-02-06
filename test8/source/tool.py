@@ -157,6 +157,7 @@ def load_entiry_attr(file_path):
 
 def getMovePositions(x, y):
     if c.MAP_HEXAGON:
+        # 根据当前地图格子 Y 轴的位置返回相邻的六个六边形格子位置
         if y % 2 == 0:
             offsets = [(-1, 0), (-1, -1), (0, -1), (1, 0), (-1, 1), (0, 1)]
         else:
@@ -168,24 +169,22 @@ def getMovePositions(x, y):
 
 def getAttackPositions(x, y):
     if c.MAP_HEXAGON:
+        # 六边形地图中可以攻击的相邻位置和可以移动的相邻位置是一样的
         return getMovePositions(x, y)
     else:
         return [(-1,-1), (-1,0), (-1,1), (0,-1), (0,1), (1,-1),(1,0), (1,1)]
 
 def isNextToEntity(entity1, entity2):
     # 判断两个生物是否在相邻可攻击的地图位置
-    if c.MAP_HEXAGON:
-        dir_list = getMovePositions(entity1.map_x, entity1.map_y)
-        for offset_x, offset_y in dir_list:
-            x, y = entity1.map_x + offset_x, entity1.map_y + offset_y
-            if x == entity2.map_x and y == entity2.map_y:
-                return True
-    else:
-        if abs(entity1.map_x - entity2.map_x) <= 1 and abs(entity1.map_y - entity2.map_y) <= 1:
+    dir_list = getAttackPositions(entity1.map_x, entity1.map_y)
+    for offset_x, offset_y in dir_list:
+        x, y = entity1.map_x + offset_x, entity1.map_y + offset_y
+        if x == entity2.map_x and y == entity2.map_y:
             return True
     return False
 
 def getHexMapPos(x, y):
+    # 根据地图格子位置返回对应的坐标值
     X_LEN = c.HEX_X_SIZE // 2
     Y_LEN = c.HEX_Y_SIZE // 2
     if y % 2 == 0:
@@ -208,6 +207,7 @@ class Vector2d():
         return (self.x * vec.y - self.y * vec.x)
 
 def isInTriangle(x1, y1, x2, y2, x3, y3, x, y):
+    # 判断坐标 (x,y) 是否在三角形中
     A = Vector2d(x1, y1)
     B = Vector2d(x2, y2)
     C = Vector2d(x3, y3)
@@ -223,6 +223,7 @@ def isInTriangle(x1, y1, x2, y2, x3, y3, x, y):
     return False
 
 def getHexMapIndex(x, y):
+    # 根据坐标返回所在六边形格子的地图位置
     X_LEN = c.HEX_X_SIZE // 2
     Y_LEN = c.HEX_Y_SIZE // 2
     tmp_x, offset_x = divmod(x, c.HEX_X_SIZE)
@@ -254,8 +255,7 @@ def getHexMapIndex(x, y):
             if isInTriangle(*data, offset_x, offset_y):
                 map_x, map_y = map_list[i]
                 break
-    if map_x == 0 and map_y == 0:
-        print('pos[%d, %d](%d, %d) base[%d, %d] off[%d, %d] ' % (map_x, map_y, x, y, tmp_x, tmp_y, offset_x, offset_y))
+
     return (map_x, map_y)
 
 
